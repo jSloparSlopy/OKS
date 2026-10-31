@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OKS – 1. parcijalni: mega kviz</title>
+<style>
+:root{
+  --bg:#eef3f3; --card:#ffffff; --ink:#12303f; --muted:#5b7380; --line:#d3dfe1;
+  --teal:#2f7f86; --teal-soft:#dcecec; --navy:#0b3d6b; --ok:#23744a; --ok-soft:#dff2e6;
+  --bad:#b03a2a; --bad-soft:#f8e1dc; --warn:#8a6100;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0f1c22; --card:#16272f; --ink:#e4eef0; --muted:#93aab3; --line:#2a414b;
+    --teal:#5db8bf; --teal-soft:#1d3a40; --navy:#8cc0ee; --ok:#6fd09b; --ok-soft:#173a29;
+    --bad:#f08a78; --bad-soft:#40201b; --warn:#e5b94d; color-scheme: dark; }
+}
+*{box-sizing:border-box}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding:20px 16px 60px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.brand{font-weight:700;font-size:15px;color:var(--navy);letter-spacing:.2px}
+.brand small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+#timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:22px;padding:4px 12px;border-radius:8px;background:var(--teal-soft);color:var(--ink)}
+#timer.low{background:var(--bad-soft);color:var(--bad)}
+h1{font-size:34px;line-height:1.15;margin:8px 0 8px;color:var(--navy)}
+h2{font-size:22px;margin:0 0 10px}
+p.lead{color:var(--muted);margin:0 0 22px;max-width:60ch}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px}
+.cats label{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.cats label:last-child{border-bottom:0}
+.cats input{width:20px;height:20px;accent-color:var(--teal)}
+.cats .n{margin-left:auto;color:var(--muted);font-size:14px}
+.modes{display:grid;gap:12px}
+.mode{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--teal);
+  border-radius:10px;padding:16px 18px;color:var(--ink);font:inherit;cursor:pointer}
+.mode:hover{border-color:var(--teal)}
+.mode b{display:block;font-size:19px;margin-bottom:2px}
+.mode span{color:var(--muted);font-size:15px}
+.mode[disabled]{opacity:.5;cursor:not-allowed}
+.mode.exam{border-left-color:var(--navy)}
+.mode.wrong{border-left-color:var(--bad)}
+.qmeta{display:flex;justify-content:space-between;color:var(--muted);font-size:14px;margin-bottom:8px;gap:10px;flex-wrap:wrap}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:18px}
+.bar i{display:block;height:100%;background:var(--teal);transition:width .2s}
+.qtext{font-size:22px;line-height:1.35;font-weight:600;margin:0 0 18px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--card);color:var(--ink);
+  border:2px solid var(--line);border-radius:10px;padding:12px 14px;font:inherit;cursor:pointer}
+.opt:hover:not([disabled]){border-color:var(--teal)}
+.opt .k{flex:none;width:28px;height:28px;border-radius:6px;background:var(--teal-soft);display:grid;place-items:center;font-weight:700;font-size:14px}
+.opt.sel{border-color:var(--navy);background:var(--teal-soft)}
+.opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:16px;padding:14px 16px;border-radius:10px;border-left:6px solid var(--ok);background:var(--ok-soft)}
+.fb.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.fb b{display:block;margin-bottom:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.btn{font:inherit;font-weight:600;padding:10px 18px;border-radius:9px;border:2px solid var(--navy);background:var(--navy);color:#fff;cursor:pointer}
+@media (prefers-color-scheme: dark){.btn{color:#0f1c22}}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.opt:focus-visible,.mode:focus-visible,.nv:focus-visible,input:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.nav{display:flex;flex-wrap:wrap;gap:6px;margin-top:22px}
+.nv{width:36px;height:36px;border-radius:7px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+.nv.done{background:var(--teal-soft);border-color:var(--teal)}
+.nv.cur{border-color:var(--navy);border-width:3px}
+.score{font-size:64px;font-weight:800;line-height:1;margin:6px 0}
+.pass{color:var(--ok)} .fail{color:var(--bad)}
+.rev{border-top:1px solid var(--line);padding:16px 0}
+.rev:first-child{border-top:0}
+.rev .q{font-weight:600;margin-bottom:6px}
+.tag{display:inline-block;font-size:13px;padding:1px 8px;border-radius:5px;margin-right:6px}
+.tag.ok{background:var(--ok-soft);color:var(--ok)} .tag.bad{background:var(--bad-soft);color:var(--bad)}
+.small{font-size:15px;color:var(--muted)}
+.hint{font-size:14px;color:var(--muted);margin-top:14px}
+kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;font-size:13px}
+@media (max-width:520px){h1{font-size:28px}.qtext{font-size:19px}.score{font-size:52px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">Osnove kibernetičke sigurnosti<small>1. parcijalni ispit · moduli 1–4</small></div>
+    <div id="timer" hidden>10:00</div>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+/* ------------------------------------------------------------------
+   PITANJA: [kategorija, pitanje, TOČAN, kriv1, kriv2, kriv3, objašnjenje]
+   Kategorije: S = Uvod i SOC, W = Windows, L = Linux, N = Napadi / labosi
+------------------------------------------------------------------- */
+const RAW = [
+/* ======================= S: UVOD I SOC (M1–2) ======================= */
+["S","Što obuhvaća pojam kibernetička sigurnost?","Aktivnosti i mjere kojima se postiže povjerljivost, cjelovitost i dostupnost podataka i sustava","Samo antivirusnu zaštitu računala","Samo zaštitu mrežne opreme","Isključivo zakonske propise o zaštiti podataka","CIA trijada: confidentiality (povjerljivost), integrity (cjelovitost), availability (dostupnost)."],
+["S","Kako se naziva prostor u kojem se odvija komunikacija između informacijskih sustava?","Kibernetički prostor","Sigurnosni perimetar","Demilitarizirana zona","Kibernetički incident","Kibernetička sigurnost = mjere zaštite; kibernetički prostor = prostor komunikacije."],
+["S","Koji je najbrojniji tip incidenata u CERT.hr prikazu za 2025. godinu?","Phishing napad (478)","Ucjenjivački napadi (7)","Krađa podataka (3)","Uskraćivanje usluge (9)","Slijede neželjene poruke (283) i financijski motivirane prijevare (277)."],
+["S","Koliko je ukupno incidenata u CERT.hr prikazu za 2025. s predavanja?","1513","478","283","2025","Ukupno 1513 incidenata, s trendom rasta."],
+["S","Tko su 'script kiddies'?","Amateri koji koriste gotove alate i skripte","Državno sponzorirane skupine","Etički hakeri s dozvolom","Članovi SOC-a na razini 3","Amateri/script kiddies su jedna od skupina threat actora."],
+["S","Što NIJE vrsta threat actora navedena na predavanju?","Tier 1 Alert Analyst","Hacktivisti","Državno sponzorirane skupine","Organizirane kriminalne skupine","Threat actors: amateri, white/black/grey hat, hacktivisti, organizirani kriminal, državne i terorističke skupine."],
+["S","Kibernetički napad je:","Namjerno zlonamjerno djelovanje s ciljem negativnog utjecaja na pojedinca ili organizaciju","Slučajan ispad sustava","Planirano održavanje mreže","Redovito ažuriranje softvera","Cyberattacks are intentional malicious acts."],
+["S","Tko može biti meta kibernetičkih napada?","Pojedinci, organizacije i države – dakle svi","Samo velike tvrtke","Samo državne institucije","Samo bankovni sustavi","Mete: pojedinci, organizacije (fakulteti, tvrtke, NGO), nacije (kritična infrastruktura)."],
+["S","Što NIJE navedeno kao posljedica napada (threat impact)?","Povećanje broja zaposlenih","Financijska šteta","Narušen ugled","Ugrožena sigurnost građana","Posljedice: financijska i emocionalna šteta, loš ugled, ukradeni i zlouporabljeni osobni podaci, ugrožena sigurnost građana."],
+["S","Što je PII (Personally Identifiable Information)?","Informacija kojom se pojedinac može pozitivno identificirati (ime, datum rođenja, broj kartice…)","Samo medicinski podaci","Samo lozinke","Vrsta malwarea","PII se prodaje na dark webu i koristi za lažne račune i kratkoročne kredite."],
+["S","Što je PSI (Personal Security Information)?","Korisnička imena, lozinke i druge sigurnosne informacije za pristup uslugama","Elektronički medicinski zapisi","Broj putovnice","Informacije o hardveru računala","PSI je vrsta PII-ja."],
+["S","PHI (Protected Health Information) je:","Podskup PII-ja koji se nalazi u elektroničkim medicinskim zapisima (EMR)","Odvojena kategorija koja nije PII","Alat za nadzor mreže","Vrsta vatrozida","PHI je podskup PII-ja."],
+["S","Koje su tri skupine protumjera (countermeasures)?","Technology, Education, Policy and procedures","Prevencija, detekcija, oporavak","People, Process, Policy","Firewall, IDS, antivirus","Technology: software, hardware, network tools, cloud. Education: tečajevi, specijalizacije. Policy: politike, standardi, smjernice, procedure."],
+["S","Što od navedenog spada u protumjeru 'Policy and procedures'?","Security standards","Cloud technologies","Cybersecurity courses","Network tools","Technology: software, hardware, network tools, cloud. Education: courses, specialisations."],
+["S","Koja su tri elementa SOC-a?","Process, People, Technology","Policy, Hardware, Software","Tier 1, Tier 2, Tier 3","SIEM, SOAR, XDR","SOC se sastoji od ljudi, procesa i tehnologije."],
+["S","Kako se SOC može organizirati?","Potpuno interno ili s elementima ugovorenim kod sigurnosnih tvrtki (npr. Cisco Managed Security Services)","Isključivo interno","Isključivo kod vanjskih pružatelja","SOC ne može postojati u tvrtki","Primjeri: CIP na TVZ-u (in-house), outsourcing kod Spana, A1, Smartneta."],
+["S","Što radi Tier 1 Alert Analyst?","Prati dolazne alarme, provjerava je li nastao pravi incident i po potrebi prosljeđuje tikete na Tier 2","Traži prijetnje koje još nisu otkrivene u mreži","Upravlja svim resursima SOC-a","Reverzno inženjerira malware","Tier 1 je ulazna razina: monitoring, otvaranje tiketa, osnovna mitigacija."],
+["S","Tko je zadužen za duboku istragu incidenata i savjetuje mjere sanacije (remediation)?","Tier 2 Incident Responder","Tier 1 Alert Analyst","SOC Manager","Tier 3 Threat Hunter","Tier 2 = deep investigation + advise remediation."],
+["S","Tko u SOC-u traži prijetnje koje su prisutne u mreži, ali još nisu otkrivene?","Tier 3 Threat Hunter","Tier 1 Alert Analyst","Tier 2 Incident Responder","SOC Manager","Tier 3 ima ekspertizu u mreži, endpointima, threat intelligenceu i malware reverse engineeringu."],
+["S","Tko upravlja svim resursima SOC-a i kontakt je prema široj organizaciji ili klijentu?","SOC Manager","Tier 1 Alert Analyst","Tier 2 Incident Responder","Tier 3 Threat Hunter","SOC Manager je točka kontakta."],
+["S","Što analitičar radi ako provjerom utvrdi da alarm nije pravi sigurnosni incident?","Odbaci ga kao lažni alarm (false alarm)","Proslijedi ga Tier 3","Izbriše sve logove","Isključi mrežu","Softver koji generira alarme može proizvesti lažne alarme, zato ih analitičar provjerava."],
+["S","Kamo se tiket prosljeđuje ako ga Tier 2 Incident Responder ne može riješiti?","Tier 3 osoblju","Natrag na Tier 1","Briše se","SOC Manageru na odobrenje brisanja","Tijek: Tier 1 → Tier 2 → Tier 3."],
+["S","Što se koristi za dodjelu alarma u red čekanja analitičara?","Ticketing sustav","Wireshark","Snort","chkrootkit","Ticketing sustav dodjeljuje, uređuje i bilježi zadatke."],
+["S","Koja je glavna uloga SIEM sustava?","Prikuplja i filtrira podatke (vatrozidi, IDS, uređaji) te detektira, klasificira i analizira prijetnje","Samo blokira promet na vatrozidu","Isključivo pohranjuje lozinke","Zamjenjuje sve članove SOC tima","SIEM = Security Information and Event Management."],
+["S","Što SOAR radi dodatno u odnosu na SIEM?","Integrira threat intelligence i automatizira istragu i odgovor prema playbookovima","Samo kriptira promet","Radi isključivo na endpointima","Ne analizira alarme","SOAR = Security Orchestration, Automation and Response."],
+["S","Što su 'playbookovi' u SOAR-u?","Unaprijed definirani scenariji automatskog odgovora na određene prijetnje, pokreću se automatski ili ručno","Lozinke administratora","Popis ranjivosti","Vrsta malwarea","Playbookovi se pokreću predefiniranim pravilima ili ih pokreće sigurnosno osoblje."],
+["S","Što je XDR (Extended Detection and Response)?","Prikuplja, normalizira i korelira podatke kroz više slojeva (endpoint, firewall, e-pošta, serveri, cloud, mreža)","Samo antivirus za endpointe","Protokol za šifriranje e-pošte","Ticketing sustav","XDR = 'cross-layered detection and response', smanjuje vrijeme detekcije i popravka."],
+["S","Koja metrika opisuje vrijeme koje napadač ima pristup mreži prije nego što je otkriven i zaustavljen?","Dwell Time","MTTR","MTTC","Time to Control","Dwell time = vrijeme boravka napadača u mreži."],
+["S","Što je MTTD (Mean Time to Detect)?","Prosječno vrijeme koje SOC treba da identificira valjane sigurnosne incidente","Prosječno vrijeme zaustavljanja i sanacije incidenta","Vrijeme zaustavljanja širenja malwarea","Vrijeme potrebno da se spriječi daljnja šteta","MTTD = detekcija."],
+["S","Što je MTTR (Mean Time to Respond)?","Prosječno vrijeme zaustavljanja i sanacije sigurnosnog incidenta","Prosječno vrijeme otkrivanja incidenta","Vrijeme boravka napadača u mreži","Broj lažnih alarma","MTTR = odgovor/sanacija."],
+["S","Što je MTTC (Mean Time to Contain)?","Vrijeme potrebno da se incident spriječi od nanošenja daljnje štete sustavima ili podacima","Vrijeme otkrivanja incidenta","Vrijeme popravka hardvera","Vrijeme trajanja ticketa","MTTC = containment; 'Time to Control' = zaustavljanje širenja malwarea u mreži."],
+["S","Koliko je godišnje dopušteno zastoja pri dostupnosti 99.999% ('five nines')?","5.256 minuta","8.76 sati","52.56 minuta","31.56 sekundi","99.9% = 8.76 h; 99.99% = 52.56 min; 99.999% = 5.256 min; 99.9999% = 31.56 s; 99.99999% = 3.16 s."],
+["S","Koliko je godišnje dopušteno zastoja pri dostupnosti 99.99% ('four nines')?","52.56 minuta","5.256 minuta","8.76 sati","17.52 sati","99.8% = 17.52 h, 99.9% = 8.76 h."],
+["S","Što je točno o odnosu sigurnosti i dostupnosti?","Sigurnost ne smije ometati poslovanje; uvijek je kompromis između jake zaštite i učinkovitog rada","Sigurnost je uvijek važnija od dostupnosti","Dostupnost nije bitna za sigurnost","Sve industrije imaju jednaku toleranciju na zastoj","Tolerancija na zastoj ovisi o trošku zastoja u odnosu na trošak zaštite od njega."],
+["S","Koja od navedenih certifikacija pripada CompTIA-i?","CySA+","CEH","CISA","GSEC","CEH – EC-Council; CISA, CISM – ISACA; GSEC, GCIH – GIAC; CC, SSCP – (ISC)²."],
+["S","Što je ENISA?","Agencija Europske unije za kibernetičku sigurnost","Hrvatski nacionalni CERT","Cisco certifikacija","Linux distribucija","Nacionalno: CERT, CARnet, SOA, ZSIS, MUP. Međunarodno: ENISA, CISA."],
+["S","Koliko se najviše termina lab. vježbi smije izostati kod redovnih studenata (od 12)?","4","2","6","8","Redovni moraju prisustvovati na 8 termina, izvanredni na 6. Vježba se priznaje samo ako je predana u potpunosti riješena."],
+["S","Što se traži za CCNA Cybersecurity certifikat prema predavanju?","Polaganje Final Exam ispita","Samo prisustvo na predavanjima","Esej od 10 stranica","Ništa, dobiva se automatski","Polaganje kolegija: CCNA Cybersecurity Final Exam, 5 parcijalnih ispita + Skill, ispitni rok."],
+
+/* ======================= W: WINDOWS (M3) ======================= */
+["W","Koji je zadani port za SSH?","22","23","25","53","SSH 22, Telnet 23, SMTP 25, DNS 53."],
+["W","Koji je zadani port za Telnet?","23","22","21","80","Telnet 23 (nešifriran), SSH 22 (šifriran)."],
+["W","Koji je zadani port za SMTP?","25","110","143","23","SMTP 25 (slanje), POP3 110 i IMAP 143 (preuzimanje)."],
+["W","Koji je zadani port za DNS?","53","67","69","123","DNS 53; DHCP 67/68; TFTP 69; NTP 123."],
+["W","Koje portove koristi DHCP?","67/68","53","69","161/162","DHCP 67/68."],
+["W","Koji je zadani port za TFTP?","69","67","123","443","TFTP 69 (UDP)."],
+["W","Koji je zadani port za HTTP?","80","443","25","110","HTTP 80, HTTPS 443."],
+["W","Koji je zadani port za HTTPS?","443","80","22","21","HTTPS 443."],
+["W","Koji je zadani port za POP3?","110","143","25","443","POP3 110, IMAP 143."],
+["W","Koji je zadani port za IMAP?","143","110","123","25","IMAP 143."],
+["W","Koji je zadani port za NTP (Network Time Protocol)?","123","143","161","53","NTP 123."],
+["W","Koje portove koristi SNMP?","161/162","123","69","22","SNMP 161/162."],
+["W","Koje portove koristi FTP?","20/21","22/23","25/110","69/70","FTP 20/21."],
+["W","Što su 'well-known ports'?","Uobičajeni portovi koje klijenti po zadanim postavkama koriste za pojedine usluge","Portovi koje koriste samo napadači","Portovi na vatrozidu koji su uvijek zatvoreni","Fizički priključci na ruteru","Administrator može odabrati drugi port, ali klijenti često koriste zadani."],
+["W","Što je server u kontekstu klijent–server?","Računalo sa softverom koje klijentima preko mreže pruža usluge","Program kojim korisnik pregledava web","Samo ruter","Samo vatrozid","Svaka usluga zahtijeva zaseban serverski softver."],
+["W","Što je klijent (client)?","Program ili aplikacija koja komunicira s određenom vrstom servera putem definiranog protokola","Računalo koje pruža e-poštu","Vrsta vatrozida","Mrežni kabel","Primjeri: web preglednik (HTTP), FTP klijent."],
+["W","Što je ranjivost (vulnerability)?","Slabost ili propust koji napadač može iskoristiti","Svaki napad na mrežu","Alat za zaštitu OS-a","Vrsta vatrozida","Napadač koristi tehniku ili alat (exploit) kako bi dobio neovlaštenu kontrolu, promijenio dozvole ili ukrao podatke."],
+["W","Koja ranjivost je omogućila širenje WannaCry i NotPetya napada?","EternalBlue – ranjivost Windows SMB-a","Heartbleed","Ranjivost DNS-a","Ranjivost DHCP-a","EternalBlue → ranjivi Windows SMB → mrežno širenje → WannaCry / NotPetya."],
+["W","S kojim je napadom na industrijske sustave povezano predavanje o ranjivostima Windowsa (uz WannaCry i NotPetya)?","Stuxnet","Heartbleed","Mirai","Code Red","Na predavanju: 'more vulnerabilities → Stuxnet'."],
+["W","Što se događa ako se isključi Windows Defender?","Sustav postaje ranjiviji na napade i malware","Ništa, Windows ima drugu zaštitu","Sustav se automatski gasi","Firewall se ubrza","Defender je zadana zaštita od malwarea."],
+["W","Zašto su nepoznate/neupravljane usluge (unknown services) rizik?","Pokrenuta nepoznata usluga u pozadini može računalo učiniti ranjivim na napad","Troše previše pohrane","Usporavaju samo internet","Nisu rizik","Treba osigurati da je svaka usluga prepoznata i sigurna."],
+["W","Zašto je loše dodijeliti grupi 'Everyone' Full Control nad mapom?","Svi korisnici mogu pristupiti svim datotekama – treba primijeniti princip najmanjih potrebnih dozvola","Usporava računalo","Onemogućuje Windows Update","Brišu se log datoteke","Svakom korisniku ili grupi treba dati minimalne potrebne dozvole."],
+["W","Koja je najbolja praksa za svakodnevni rad u Windowsima?","Prijava kao Standard User, a administratorske ovlasti samo za pojedine zadatke","Uvijek rad kao Administrator","Isključiti lozinku za Administratora","Dijeliti administratorski račun","Program pokrenut kao administrator ima privilegije tog računa."],
+["W","Zašto treba povremeno pregledavati pravila Windows firewalla?","Pravila s vremenom mogu prestati vrijediti pa ih treba ukloniti","Firewall se sam briše","Pravila se ne mogu mijenjati","Firewall radi samo ako je pravila malo","Pregled pravila osigurava da su još primjenjiva."],
+["W","Koja su dva načina pokretanja programa s administratorskim ovlastima?","Desni klik na naredbu → Run as Administrator, ili pokretanje Command Prompta kao Administrator","Dvoklik na ikonu i Enter","Tipka F8 pri pokretanju","Isključivanje UAC-a","Svaka naredba iz administratorskog CMD-a izvršava se s tim privilegijama, uključujući instalaciju softvera."],
+["W","Što se događa kad se korisnik nalazi u više grupa s preklapajućim dozvolama?","'Explicit deny' nadjačava dozvole koje daje druga grupa","Uvijek pobjeđuje najnovija grupa","Uvijek pobjeđuje 'allow'","Korisnik ne dobiva ništa","Korisnik dobiva dozvole grupe u koju je smješten; explicit deny ima prednost."],
+["W","Što je lokalni korisnik (local user) u Windowsima?","Račun kreiran pri prvom pokretanju/instalaciji s osobnim postavkama, dozvolama i datotekama","Račun u Active Directoryju","Račun na udaljenom serveru","Administratorska grupa","Grupe olakšavaju administraciju korisnika."],
+["W","Koja tvrdnja o Windows CLI-ju (cmd.exe) je točna?","Imena datoteka i putanja po zadanom nisu case-sensitive, a opcije naredbe odvajaju se kosom crtom (/)","Imena su case-sensitive","Opcije se odvajaju s dvije crtice (--)","Povijest naredbi se ne čuva","Pogoni se označavaju slovom, dvotočkom i backslashom; Tab dovršava, strelice gore/dolje vraćaju povijest."],
+["W","Kako se u Windows CLI-ju prelazi na drugi disk (npr. D)?","Upisati D: i pritisnuti Enter","cd /D","mount D","switch D","Pogoni su označeni slovom iza kojeg ide dvotočka."],
+["W","Koja naredba prikazuje put paketa do odredišta preko usputnih ruteru?","tracert","ping","nslookup","netstat","CLI alati: ipconfig, ping, tracert, nslookup, netstat."],
+["W","Koja naredba služi za DNS upite (razlučivanje imena)?","nslookup","ipconfig","tracert","net use","nslookup – DNS."],
+["W","Što su cmdlets u PowerShellu?","Naredbe koje izvode radnju i vraćaju izlaz ili objekt sljedećoj naredbi","Datoteke s .bat ekstenzijom","Grafički alati","Dodaci Windows Defendera","PowerShell: cmdlets, skripte (.ps1), funkcije."],
+["W","Koja je ekstenzija PowerShell skripte?",".ps1",".bat",".sh",".cmd","PowerShell skripte su .ps1 datoteke."],
+["W","Što su PowerShell funkcije?","Dijelovi koda na koje se može referencirati iz skripte","Datoteke s .exe ekstenzijom","Prozori u Task Manageru","Windows servisi","Vrste naredbi: cmdlets, scripts, functions."],
+["W","Za što se koristi WMI (Windows Management Instrumentation)?","Za upravljanje i nadzor udaljenih računala (hardver, softver, zdravlje sustava)","Za šifriranje diskova","Za izradu sigurnosnih kopija e-pošte","Samo za instalaciju drivera","WMI Control tabovi: General, Backup/Restore, Security, Advanced."],
+["W","Koji WMI tab određuje tko ima pristup različitim WMI statistikama?","Security","General","Backup/Restore","Advanced","Advanced = zadani namespace; Backup/Restore = ručna sigurnosna kopija statistike."],
+["W","Koja naredba postavlja zahtjeve za lozinke i prijavu korisnika?","net accounts","net share","net view","net use","net accounts – password i logon zahtjevi."],
+["W","Koja naredba stvara, uklanja ili upravlja dijeljenim resursima?","net share","net session","net use","net start","net share – shared resources."],
+["W","Koja naredba prikazuje popis računala i mrežnih uređaja na mreži?","net view","net stop","net session","net accounts","net view – popis računala/uređaja."],
+["W","Koja naredba povezuje, odspaja i prikazuje informacije o dijeljenim mrežnim resursima?","net use","net view","net share","net accounts","net use – connect/disconnect/display shared network resources."],
+["W","Koja naredba prikazuje ili prekida sesije između računala i drugih računala na mreži?","net session","net start","net view","net stop","net session."],
+["W","Koja naredba pokreće mrežnu uslugu ili ispisuje pokrenute mrežne usluge?","net start","net stop","net use","net session","net stop zaustavlja uslugu."],
+["W","Kako se vidi popis svih net naredbi?","net help","net list","net /all","help net --all","net help prikazuje popis; za pojedinu naredbu net help <naredba>."],
+["W","Koji tab Task Managera prikazuje programe koji se pokreću pri podizanju računala i omogućuje Disable?","Startup","Performance","App history","Services","Startup – desni klik → Disable."],
+["W","U kojem tabu Task Managera se postavlja prioritet procesa, CPU affinity i 'Analyze wait chain'?","Details","Processes","Users","Startup","Analyze wait chain pokazuje čeka li proces drugi proces ili je zapeo."],
+["W","Koji tab Task Managera prikazuje sve prijavljene korisnike i resurse koje troše te omogućuje odspajanje korisnika?","Users","Processes","Performance","Services","Users – administrator može odspojiti korisnika."],
+["W","Koji tab Task Managera prikazuje pregled CPU-a, memorije, diska i mreže?","Performance","Processes","App history","Details","Performance – statistike performansi."],
+["W","Koji tab Task Managera prikazuje korištenje resursa po aplikaciji kroz vrijeme?","App history","Startup","Users","Services","Opcija 'Show history for all processes' prikazuje povijest svih procesa."],
+["W","Što prikazuje tab Services u Task Manageru?","Učitane usluge s PID-om, opisom i statusom (Running/Stopped)","Samo mrežne usluge","Samo usluge koje su pale","Popis korisnika","Pri dnu je gumb za otvaranje konzole Services."],
+["W","Koji tab Resource Monitora pokazuje koji procesi komuniciraju mrežom i pristupa li neovlašteni proces mreži?","Network","CPU","Memory","Disk","Resource Monitor tabovi: Overview, CPU, Memory, Disk, Network."],
+["W","Čemu služi Network and Sharing Center?","Provjera/stvaranje mrežnih veza, postavke dijeljenja i mrežnih adaptera","Pregled logova događaja","Upravljanje procesima","Konfiguracija PowerShell skripti","Početni prikaz pokazuje pregled aktivne mreže."],
+["W","Koja naredba prikazuje aktivne TCP veze povezane s procesima (program i PID) i traži se pokretanje kao administrator?","netstat -abno","ipconfig /all","tracert","nslookup","netstat traži neovlaštene dolazne/odlazne veze."],
+["W","Što analitičar radi kad u netstat izlazu nađe sumnjiv proces?","Pronađe proces po PID-u u Task Manageru, zaustavi ga i očisti računalo alatom za uklanjanje malwarea","Odmah isključi mrežni kabel i ništa više","Ponovno instalira preglednik","Briše sve logove","Ako je više procesa istog imena, koristi se jedinstveni PID (PID se prikaže desnim klikom na zaglavlje tablice)."],
+["W","Koji je ispravan UNC format za pristup mrežnom resursu?","\\\\servername\\sharename\\file","//server/share/file","servername:sharename:file","C:\\servername\\file","servername može biti DNS ime, NetBIOS ime ili IP adresa."],
+["W","Koji protokol Windows koristi za prijavu i upravljanje udaljenim računalom kao da je lokalno?","RDP (Remote Desktop Protocol)","SMB","TFTP","NTP","RDP – sigurnosni analitičari ga često koriste u istragama."],
+["W","Što bilježi Windows Event Viewer?","Povijest događaja aplikacija, sigurnosti i sustava; sigurnosni događaji koriste event ID-ove","Samo mrežni promet","Samo greške hardvera","Samo prijave administratora","Dvije kategorije: Windows Logs i Application and Services Logs; custom view 'Administrative Events'."],
+["W","Koji je Windows izdanje koje se uglavnom koristi u podatkovnim centrima?","Windows Server","Windows Home","Windows Mobile","Windows IoT Core samo","Windows Server obitelj počinje s Windows Server 2003."],
+["W","Što Windows Server tipično pruža?","DNS, DHCP, SMB/NFS/DFS, FTP/HTTP/HTTPS, Group Policy i Active Directory","Samo igre","Samo antivirusnu zaštitu","Samo ispis","Network, File, Web i Management usluge."],
+["W","Što je 'patch'?","Ažuriranje koda koje proizvođač izdaje kako bi spriječio napad iskorištavanjem novootkrivene ranjivosti","Vrsta antivirusa","Mrežni kabel","Dozvola na datoteku","Patchevi štite od novootkrivenih virusa i crva."],
+["W","Što je service pack?","Sveobuhvatna nadogradnja koja objedinjuje patcheve i nadogradnje","Samo jedan sigurnosni patch","Alat za backup","Pretplata na antivirus","Mnogi razorni napadi bili bi blaži da su korisnici instalirali najnoviji service pack."],
+["W","Što je Local Security Policy?","Sigurnosne postavke za samostalna računala koja nisu u Active Directory domeni","Politika koja vrijedi za cijelu domenu","Alat za mrežni nadzor","Dio Linuxa","U mrežama s Windowsima obično se koristi Active Directory s domenama na Windows Serveru."],
+["W","Gdje se u Local Security Policy nalazi Password Policy?","Account Policies","Local Policies","Public Key Policies","Software Restriction","Password Policy definira kriterije lozinki za sve lokalne korisnike."],
+["W","Koja postavka služi za sprječavanje brute-force pogađanja lozinki?","Account Lockout Policy","Password History","Export Policy","AppLocker","Lockout blokira račun nakon više neuspjelih prijava."],
+["W","Što služi za primjenu iste lokalne politike na više samostalnih računala?","Export Policy","AppLocker","Event Viewer","Resource Monitor","Korisno kad administrator treba postaviti opsežne politike korisničkih prava i sigurnosnih opcija."],
+["W","Čemu služi AppLocker?","Ograničava koje datoteke/aplikacije korisnici ili grupe smiju pokretati","Šifrira disk","Blokira phishing e-poštu","Upravlja mrežnim adapterima","AppLocker je dio Local Security Policy (uz User Rights i Firewall Rules)."],
+["W","Koja pravila sigurnosna politika treba sadržavati u vezi s ostavljenim računalom?","Zaključavanje računala kad se pokrene screensaver","Isključivanje računala svaki sat","Brisanje lozinki","Odjava svih korisnika u ponoć","Treba osigurati da su računala sigurna kad korisnici nisu prisutni."],
+["W","Što od navedenog NIJE funkcija Windows Defendera?","Rad kao SIEM sustav za cijelu mrežu","Antivirus zaštita","Phishing zaštita","Zaštita od adwarea i spywarea","Defender: antivirus, adware, phishing, spyware, trusted/untrusted sources."],
+["W","Što radi zaštita od phishinga u Windows Defenderu?","Blokira IP adrese poznatih phishing stranica i upozorava na sumnjive stranice","Briše sve e-poruke","Isključuje internet","Skenira samo USB","Spyware zaštita traži keyloggere i drugi spyware."],
+["W","Gdje se u Windows Defender Firewallu stvaraju pravila dolaznog/odlaznog prometa?","Advanced settings","Task Manager","Event Viewer","net view","Allow an app or feature through firewall, Turn Windows Firewall on or off, Advanced settings."],
+["W","Što je firewall?","Selektivno odbija promet prema računalu ili segmentu mreže","Antivirusni program","Alat za enkripciju diska","Alat za sigurnosnu kopiju","Windows po zadanom koristi Windows Defender Firewall."],
+
+/* ======================= L: LINUX (M4) ======================= */
+["L","Zašto se Linux često bira u SOC-u?","Open source je, ima moćan CLI i daje korisniku više kontrole nad OS-om i mrežnom komunikacijom","Plaća se skupa licenca","Nema CLI-ja","Ne može se prilagođavati","Cijeli OS se može prilagoditi da postane savršena platforma za sigurnosnu analizu."],
+["L","Kako se naziva administratorski korisnik u Linuxu?","root (superuser)","guest","analyst","staff","Root može promijeniti bilo koji aspekt računala i jedini može nadjačati dozvole datoteka."],
+["L","Što je Security Onion?","Open source skup alata za analizu mrežne sigurnosti (posebna verzija Linuxa)","Windows antivirus","Cisco ruter","Programski jezik","U njemu je Sguil – konzola kibernetičkog analitičara."],
+["L","Što je Sguil?","Konzola kibernetičkog analitičara u Security Onion distribuciji","Linux firewall","Alat za kriptiranje","Ticketing sustav za Windows","Sguil je u Security Onionu."],
+["L","Koja distribucija objedinjuje mnoge alate za penetracijsko testiranje?","Kali Linux","Security Onion","Debian","CentOS","Kali uključuje packet generatore, port scannere i proof-of-concept exploite."],
+["L","Što je penetracijsko testiranje (PenTesting)?","Traženje ranjivosti u mreži ili računalu njihovim napadanjem","Instalacija antivirusa","Izrada sigurnosnih kopija","Brisanje logova","PenTesting alati: packet generators, port scanners, PoC exploits."],
+["L","Koji su alati za hvatanje mrežnih paketa (packet capture)?","Wireshark i tcpdump","Snort i Sguil","chkrootkit i dd","Nginx i NTP","Wireshark je popularan (GUI), tcpdump je CLI alat."],
+["L","Koja je uloga alata za analizu malwarea u SOC-u?","Sigurno pokretanje i promatranje malwarea bez ugrožavanja sustava","Blokiranje portova","Slanje e-pošte","Upravljanje korisnicima","Omogućuju analitičarima sigurno promatranje izvršavanja malwarea."],
+["L","Što rade sustavi za detekciju upada (IDS)?","Kad promet odgovara pravilu, poduzimaju unaprijed definiranu akciju","Šifriraju disk","Dodjeljuju IP adrese","Pohranjuju lozinke","Snort je primjer Linux-based IDS-a."],
+["L","Koji od navedenih je Linux IDS?","Snort","Nginx","Cron","Sguil","Snort – IDS; Nginx – web server."],
+["L","Čemu služi log manager?","Olakšava praćenje velike količine zapisa (log entries) koje mreža generira","Zamjenjuje vatrozid","Instalira pakete","Upravlja procesima","Log datoteke bilježe događaje."],
+["L","Koja naredba ispisuje ime trenutnog direktorija?","pwd","ls","cd","uname","ls – datoteke u direktoriju; cd – promjena direktorija."],
+["L","Koja naredba stvara direktorij?","mkdir","rmdir","cd","touch","rmdir briše prazne direktorije."],
+["L","Koja naredba briše datoteke?","rm","rmdir","mv","cat","rmdir briše samo prazne direktorije."],
+["L","Koja naredba ispisuje sadržaj datoteke?","cat","cp","ls","pwd","cat ispisuje sadržaj, očekuje ime datoteke kao parametar."],
+["L","Koja naredba kopira datoteke s izvora na odredište?","cp","mv","cat","dd","mv premješta datoteke."],
+["L","Koja naredba premješta datoteke u drugi direktorij?","mv","cp","rm","cat","mv – move."],
+["L","Koja naredba prikazuje informacije o sustavu?","uname","whoami","man","locate","whoami prikazuje trenutnog korisnika."],
+["L","Koja naredba prikazuje trenutnog korisnika?","whoami","uname","su","passwd","whoami."],
+["L","Koja naredba traži datoteke pomoću baze podataka?","locate","grep","man","find /","locate koristi bazu."],
+["L","Koja naredba prikazuje dokumentaciju za određenu naredbu?","man","grep","cat","uname","man = manual."],
+["L","Koja naredba traži niz znakova u datoteci ili izlazu druge naredbe?","grep","locate","man","uname","grep se često koristi uz piping."],
+["L","Koja naredba mijenja dozvole datoteke?","chmod","chown","passwd","sudo","chmod – dozvole; chown – vlasništvo."],
+["L","Koja naredba mijenja vlasnika datoteke?","chown","chmod","dd","ps","chown – ownership."],
+["L","Koja naredba kopira podatke s ulaza na izlaz?","dd","cp","mv","cat","dd = copy data from input to output."],
+["L","Koja naredba ispisuje procese koji se trenutno izvode (jednokratni ispis)?","ps","top","kill","su","top ih prikazuje dinamički."],
+["L","Koja naredba dinamički prikazuje procese (izlaz tipkom q)?","top","ps","kill","su","top neprekidno osvježava prikaz."],
+["L","Koja naredba uklanja, restartira ili pauzira proces ovisno o parametrima?","kill","ps","top","dd","Prije kill-a obično se pokrene ps ili top da se sazna PID."],
+["L","Koja naredba izvršava naredbu kao superuser (ili drugi imenovani korisnik)?","sudo","su","passwd","chown","su simulira prijavu kao drugi korisnik ili superuser."],
+["L","Koja naredba prikazuje ili konfigurira mrežnu karticu?","ifconfig","iwconfig","passwd","uname","iwconfig – bežične kartice."],
+["L","Koja naredba prikazuje ili konfigurira bežičnu mrežnu karticu?","iwconfig","ifconfig","chmod","grep","iwconfig je za wireless."],
+["L","Koja naredba instalira, konfigurira i uklanja pakete na Debianu i derivatima?","apt-get","dd","su","shutdown","apt-get – Debian paketi."],
+["L","Koja naredba mijenja lozinku?","passwd","su","chown","whoami","passwd."],
+["L","Koja naredba gasi sustav, ponovno ga pokreće ili izbacuje sve prijavljene korisnike?","shutdown","kill","dd","passwd","shutdown obavlja i restart, halt, sleep."],
+["L","Kako se u Linuxu uglavnom konfiguriraju usluge (Nginx, NTP, Snort)?","Konfiguracijskim datotekama (port, lokacija resursa, autorizacija klijenata)","Registryjem","Task Managerom","Event Viewerom","Format nije propisan – bira ga developer, često 'option = value'."],
+["L","Što je Nginx?","Lagani web server za Linux","Linux IDS","Kernel modul","Alat za kriptiranje","Primjer servisa s konfiguracijskom datotekom."],
+["L","Što je device hardening?","Primjena provjerenih metoda zaštite uređaja i njegovog administrativnog pristupa","Pojačavanje signala","Instalacija igara","Kopiranje diska","Uključuje lozinke, sigurnu prijavu preko SSH-a, gašenje nepotrebnih usluga i ažuriranja."],
+["L","Koja od mjera NIJE dobra praksa hardeninga?","Omogućiti sve usluge pri pokretanju sustava","Onemogućiti root prijavu preko SSH-a","Isključiti USB auto-detekciju","Održavati sustav ažurnim","Treba onemogućiti nekorištene usluge i zabraniti da se pokreću pri bootu."],
+["L","Što od navedenog je preporuka za hardening lozinki?","Jake lozinke, periodička promjena i zabrana ponovne upotrebe starih","Ista lozinka za sve račune","Kratke lozinke radi lakšeg pamćenja","Lozinke se ne mijenjaju nikad","Uz to: fizička sigurnost, minimalni broj paketa."],
+["L","Što je daemon u Linuxu?","Pozadinski proces koji radi bez interakcije korisnika","Vrsta malwarea","Grafičko sučelje","Korisnička grupa","Neki logovi sadrže informacije o daemonima."],
+["L","Koji log na Debian/Ubuntu sustavima pohranjuje sve događaje vezane uz autentikaciju?","/var/log/auth.log","/var/log/boot.log","/var/log/cron","/var/log/dmesg","Sve što uključuje autorizaciju korisnika."],
+["L","Koji log koriste RedHat i CentOS za prijave (sudo, SSH)?","/var/log/secure","/var/log/auth.log","/var/log/kern.log","/var/log/boot.log","secure prati i greške zabilježene od SSSD-a."],
+["L","Koji log sadrži opće, uglavnom informativne i nekritične sistemske poruke?","/var/log/messages","/var/log/secure","/var/log/cron","/var/log/boot.log","messages – generic computer activity."],
+["L","Koji log sadrži informacije zabilježene tijekom pokretanja računala?","/var/log/boot.log","/var/log/auth.log","/var/log/kern.log","/var/log/cron","boot.log – boot-related information."],
+["L","Koji log sadrži poruke kernel ring buffera i informacije o hardverskim uređajima i driverima?","/var/log/dmesg","/var/log/mysqld.log","/var/log/cron","/var/log/messages","Događaji su bitni jer syslog u tom trenutku još ne radi."],
+["L","Gdje se bilježe informacije koje bilježi kernel?","/var/log/kern.log","/var/log/cron","/var/log/secure","/var/log/mysql.log","kern.log."],
+["L","Gdje se bilježe događaji zakazanih zadataka (cron jobs)?","/var/log/cron","/var/log/boot.log","/var/log/kern.log","/var/log/secure","Cron je servis za planiranje automatskih zadataka."],
+["L","Koja datoteka je log MySQL-a?","/var/log/mysqld.log ili /var/log/mysql.log","/var/log/cron","/var/log/messages","/var/log/secure","Bilježe se debug, failure i success poruke mysqld procesa i mysqld_safe daemona."],
+["L","Što znači -rwxrw-r-- u izlazu ls -l?","Vlasnik može čitati, pisati i izvršavati; grupa čitati i pisati; ostali samo čitati","Svi mogu sve","Vlasnik samo čita; grupa piše; ostali izvršavaju","Vlasnik: rw-, grupa: rwx, ostali: r--","Prvi znak '-' = datoteka; zatim user (rwx), group (rw-), others (r--)."],
+["L","Što je drugo polje u izlazu ls -l?","Broj hard linkova prema datoteci","Veličina datoteke","Datum zadnje izmjene","Ime grupe","Polja: dozvole, linkovi, vlasnik, grupa, veličina (B), datum izmjene, ime."],
+["L","Što znači prvi znak '-' u dozvolama -rwxrw-r--?","Radi se o datoteci","Radi se o direktoriju","Datoteka nema dozvola","Datoteka je skrivena","Za direktorij bi stajao d."],
+["L","Koja je oktalna vrijednost dozvola rwxrw-r-- ?","764","674","746","777","r=4, w=2, x=1; rwx=7, rw-=6, r--=4."],
+["L","Koje dozvole daje chmod 750?","rwxr-x---","rwxrwxr-x","rwx------","rw-r-----","7=rwx, 5=r-x, 0=---."],
+["L","Koja oktalna vrijednost odgovara dozvolama 'rw-' (čitanje i pisanje)?","6","4","5","7","4+2 = 6."],
+["L","Koja oktalna vrijednost znači 'Read and Execute' (r-x)?","5","6","3","7","4+1 = 5."],
+["L","Tko jedini može nadjačati dozvole datoteka na Linux računalu?","root korisnik","Vlasnik datoteke","Bilo koji član grupe","Svaki korisnik s sudo","Dozvole su temeljni dio Linuxa."],
+["L","Što je X Window System (X11)?","Sustav prozora koji pruža osnovni okvir za GUI i radi kao server","Alat za kriptiranje","Linux firewall","Ticketing sustav","X ne definira korisničko sučelje – to rade window manageri."],
+["L","Što je malware na Linux hostu i koji je čest vektor napada?","Virusi, trojanci, crvi i drugi zlonamjerni kod; česti vektor su usluge i procesi","Linux nema malware","Samo USB uređaji","Samo e-pošta","Linux malware uključuje viruse, trojance, crve."],
+["L","Čemu je napadač u primjeru koristio Telnet prema web serveru na portu 80?","Doznati tip i verziju web servera da bi potražio poznate ranjivosti","Instalirati antivirus","Zaštititi server","Ažurirati sustav","Saznao je da radi nginx 1.12.0 pa traži ranjivosti u toj verziji."],
+["L","Što je rootkit?","Malware koji povećava privilegije neovlaštenog korisnika i mijenja kernel ili njegove module","Alat za sigurnosnu kopiju","Vrsta vatrozida","Malware koji samo šalje spam","Rootkit mijenja najosnovnije operacije OS-a."],
+["L","Što je najčešće jedino stvarno rješenje za uklanjanje rootkita?","Ponovna instalacija operacijskog sustava","Restart računala","Brisanje logova","Instalacija igara","Detekcija: boot s pouzdanog medija."],
+["L","Koji je popularni Linux alat za provjeru poznatih rootkita?","chkrootkit","tcpdump","Sguil","iwconfig","chkrootkit provjerava računalo na poznate rootkite."],
+["L","Što je piping?","Lančanje naredbi tako da izlaz jedne postaje ulaz druge, npr. ls -l | grep host","Brisanje datoteka","Instalacija paketa","Kopiranje dozvola","Znak | spaja naredbe."],
+["L","Što radi naredba ls -l | grep host?","Filtrira izlaz ls -l i prikazuje samo retke koji sadrže 'host'","Briše datoteke koje sadrže 'host'","Instalira paket host","Mijenja dozvole","Piping ls i grep."],
+
+/* ======================= N: NAPADI I LABOSI ======================= */
+["N","Što je phishing?","Lažna poruka/stranica koja se pretvara da je pouzdan izvor kako bi ukrala podatke ili navela korisnika na radnju","Fizička krađa računala","Prekid mrežnog kabela","Kopiranje diska","Primjer na predavanju: lažna 'Službena NIAS obavijest' s rokom za verifikaciju."],
+["N","Koji je tipičan znak phishing poruke poput lažne NIAS obavijesti?","Pritisak roka i poveznica za 'verifikaciju' uz prijetnju suspenzijom pristupa","Poruka bez poveznica","Poruka s potpunim ispravnim domenom i bez zahtjeva","Poruka koja traži samo čitanje","Napadači stvaraju hitnost i vode žrtvu na lažnu stranicu."],
+["N","Lažni pravni podnesak 'Ravnateljstva državne policije' s prijetnjom objavom u medijima i rokom od 72 sata je primjer:","Phishing/prijevare iznuđivanjem (scam)","Legitimne policijske obavijesti","Ažuriranja sustava","DNS upita","Prijevarom se izaziva strah da bi žrtva odgovorila."],
+["N","Što su spam poruke?","Neželjene, često masovno slane poruke (npr. predatorski časopisi koji nude brzo objavljivanje uz naknadu)","Sigurnosni patchevi","Poruke vatrozida","Poruke IDS-a","Neželjene poruke su druga najbrojnija kategorija (283) u CERT.hr prikazu."],
+["N","Što je ransomware (ucjenjivački napad)?","Malware koji šifrira podatke i traži otkupninu","Program za pretraživanje weba","Alat za kompresiju","Vrsta vatrozida","U CERT.hr prikazu 2025: 7 ucjenjivačkih napada."],
+["N","Što je DoS napad (uskraćivanje usluge)?","Napad kojim se usluga čini nedostupnom legitimnim korisnicima","Krađa lozinki","Instalacija rootkita","Skeniranje portova","DoS cilja dostupnost (A u CIA)."],
+["N","Koju sastavnicu CIA trijade prvenstveno ugrožava DoS napad?","Dostupnost","Povjerljivost","Cjelovitost","Autentičnost","Ispad usluge/DoS = dostupnost."],
+["N","Koju sastavnicu CIA trijade ugrožava krađa osobnih podataka?","Povjerljivost","Dostupnost","Cjelovitost samo","Nijednu","Povjerljivost = samo ovlašteni pristup."],
+["N","Koju sastavnicu CIA trijade ugrožava neovlaštena izmjena sadržaja (npr. defacement)?","Cjelovitost","Dostupnost","Povjerljivost","Nijednu","Neovlaštena izmjena sadržaja – 66 slučajeva u CERT.hr 2025."],
+["N","Što je brute-force napad na lozinke?","Sustavno isprobavanje velikog broja lozinki dok se ne pogodi prava","Slanje spam poruke","Fizičko oštećenje računala","Ažuriranje softvera","Obrana: Account Lockout Policy i jake lozinke."],
+["N","Što je 'napadačka infrastruktura' (attack infrastructure) u CERT.hr statistici?","Resursi (serveri, domene, botnet) koje napadači koriste za provedbu napada","Zaštitna oprema SOC-a","Mrežni kabeli","Vrsta ransomwarea","U 2025.: 187 slučajeva."],
+["N","Što je keylogger?","Spyware koji bilježi tipke koje korisnik utipka","Alat za brzo tipkanje","Vrsta vatrozida","Backup alat","Windows Defender skenira keyloggere i drugi spyware."],
+["N","Što je socijalni inženjering?","Manipulacija ljudima kako bi odali podatke ili obavili radnju","Programiranje društvenih mreža","Šifriranje komunikacije","Konfiguriranje rutera","Phishing je oblik socijalnog inženjeringa."],
+["N","Što je 'zero-day' ranjivost?","Ranjivost koju proizvođač još ne zna ili za koju još ne postoji patch","Ranjivost koja traje jedan dan","Ranjivost popravljena prije izlaska softvera","Ranjivost samo u Linuxu","Patchevi proizvođača popravljaju poznate ranjivosti."],
+["N","Koja je najbolja obrana od napada koji iskorištavaju poznate ranjivosti (npr. EternalBlue)?","Redovito instaliranje sigurnosnih patcheva i ažuriranja","Isključivanje firewalla","Dijeljenje administratorske lozinke","Onemogućavanje antivirusa","Treba koristiti sustave koji automatski distribuiraju, instaliraju i prate sigurnosna ažuriranja."],
+["N","Koji alat u Windowsima koristi analitičar da provjeri postoji li neovlaštena veza prema vanjskoj IP adresi?","netstat -abno","net accounts","net share","ipconfig","Povezivanje veze s procesom po PID-u."],
+["N","Koji Linux zapis prvo provjeriti za sumnjive pokušaje prijave (Debian/Ubuntu)?","/var/log/auth.log","/var/log/dmesg","/var/log/cron","/var/log/boot.log","Bilježi autentikaciju; na RedHat/CentOS /var/log/secure."],
+["N","Što je OS hardening u kontekstu obrane od napada?","Smanjenje površine napada gašenjem nepotrebnih usluga, ažuriranjem i jakom autentikacijom","Povećanje brzine procesora","Vizualno prilagođavanje sučelja","Uklanjanje svih korisnika","Attack surface = skup točaka kroz koje napadač može napasti."],
+["N","Što je 'attack surface' (napadačka površina)?","Skup svih točaka kroz koje napadač može pokušati ući u sustav","Fizički prostor SOC-a","Vrsta malwarea","Tip vatrozida","Ključni pojmovi: threat actor, target, vulnerabilities, attack surface, attack, threat, impact."]
+];
+
+/* ------------------------------------------------------------------ */
+const CATS = {S:"Uvod i SOC (M1–2)", W:"Windows (M3)", L:"Linux (M4)", N:"Napadi i labosi"};
+const Q = RAW.map((r,i)=>{
+  if(r.length!==7) console.warn("Neispravan redak", i, r[1]);
+  return {id:i, c:r[0], q:r[1], opts:[r[2],r[3],r[4],r[5]], e:r[6]};
+});
+const EXAM_N = 15, EXAM_SEC = 600, MAX_PTS = 20, PASS_PTS = 10;
+const L = "ABCD";
+
+/* ---------- pomoćne funkcije ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function getWrong(){ try{ return new Set(JSON.parse(localStorage.getItem("oks1_wrong")||"[]")); }catch(e){ return mem.wrong; } }
+function setWrong(s){ mem.wrong=s; try{ localStorage.setItem("oks1_wrong", JSON.stringify([...s])); }catch(e){} }
+const mem = {wrong:new Set()};
+const fmt = s => String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+
+let sel = new Set(Object.keys(CATS));
+let S = null, timerId = null;
+
+/* ---------- ekrani ---------- */
+function home(){
+  stopTimer(); S = null; $("#timer").hidden = true;
+  const wrong = getWrong(), wrongCount = Q.filter(q=>wrong.has(q.id)).length;
+  const counts = {}; Q.forEach(q=>counts[q.c]=(counts[q.c]||0)+1);
+  $("#app").innerHTML = `
+    <h1>Mega kviz za 1. parcijalni</h1>
+    <p class="lead">${Q.length} pitanja iz modula 1–4 (predavanja 1 i 2) i s tema laboratorijskih vježbi. Pravi ispit: 15 pitanja, 10 minuta, 20 bodova, prolaz od 10 bodova.</p>
+    <div class="panel cats">
+      <h2>Što želiš vježbati?</h2>
+      ${Object.keys(CATS).map(k=>`<label><input type="checkbox" data-cat="${k}" ${sel.has(k)?"checked":""}> ${esc(CATS[k])}<span class="n">${counts[k]||0} pitanja</span></label>`).join("")}
+    </div>
+    <div class="modes">
+      <button class="mode exam" data-mode="exam"><b>Simulacija ispita</b><span>${EXAM_N} nasumičnih pitanja, mjerač od 10 minuta, rezultat tek na kraju.</span></button>
+      <button class="mode" data-mode="practice"><b>Vježba</b><span>Sva odabrana pitanja redom, odmah vidiš točan odgovor i objašnjenje.</span></button>
+      <button class="mode wrong" data-mode="wrong" ${wrongCount?"":"disabled"}><b>Moje pogreške</b><span>${wrongCount?`Ponovi ${wrongCount} pitanja koja si ranije pogriješio/la.`:"Još nema pogrešnih odgovora. Pojavit će se nakon prvog kviza."}</span></button>
+    </div>
+    <p class="hint">Tipke: <kbd>1</kbd>–<kbd>4</kbd> ili <kbd>A</kbd>–<kbd>D</kbd> biraju odgovor, <kbd>Enter</kbd> ili <kbd>→</kbd> ide dalje.</p>`;
+}
+
+function start(mode){
+  const wrong = getWrong();
+  let pool = Q.filter(q=>sel.has(q.c));
+  if(mode==="wrong") pool = Q.filter(q=>wrong.has(q.id));
+  if(!pool.length){ alert("Odaberi barem jednu temu."); return; }
+  if(mode==="exam") pool = shuffle(pool).slice(0, EXAM_N);
+  else pool = shuffle(pool);
+  S = { mode, i:0, done:false, left:EXAM_SEC,
+        list: pool.map(q=>({q, order:shuffle([0,1,2,3]), ans:null})) };
+  if(mode==="exam"){ $("#timer").hidden=false; tick(); timerId=setInterval(tick,1000); }
+  else $("#timer").hidden = true;
+  render();
+}
+
+function tick(){
+  const t=$("#timer"); t.textContent=fmt(S.left); t.classList.toggle("low", S.left<=60);
+  if(S.left<=0){ finish(true); return; }
+  S.left--;
+}
+function stopTimer(){ if(timerId){ clearInterval(timerId); timerId=null; } }
+
+function render(){ if(!S) home(); else if(S.done) results(); else question(); }
+
+function question(){
+  const it = S.list[S.i], n = S.list.length, exam = S.mode==="exam";
+  const locked = !exam && it.ans!==null;
+  const correctPos = it.order.indexOf(0);
+  const opts = it.order.map((orig,pos)=>{
+    let cls="opt", dis="";
+    if(exam){ if(it.ans===pos) cls+=" sel"; }
+    else if(locked){ dis="disabled"; if(pos===correctPos) cls+=" ok"; else if(pos===it.ans) cls+=" bad"; }
+    return `<button class="${cls}" data-pick="${pos}" ${dis}><span class="k">${L[pos]}</span><span>${esc(it.q.opts[orig])}</span></button>`;
+  }).join("");
+  let fb="";
+  if(locked){
+    const ok = it.ans===correctPos;
+    fb = `<div class="fb ${ok?"":"bad"}" role="status"><b>${ok?"Točno.":"Netočno."}</b>${ok?"":`Točan odgovor: ${L[correctPos]}. `}${esc(it.q.e)}</div>`;
+  }
+  const answered = S.list.filter(x=>x.ans!==null).length;
+  const nav = exam ? `<div class="nav">${S.list.map((x,k)=>`<button class="nv ${x.ans!==null?"done":""} ${k===S.i?"cur":""}" data-go="${k}" aria-label="Pitanje ${k+1}">${k+1}</button>`).join("")}</div>` : "";
+  const last = S.i===n-1;
+  $("#app").innerHTML = `
+    <div class="qmeta"><span>Pitanje ${S.i+1} od ${n}</span><span>${esc(CATS[it.q.c])}${exam?` · odgovoreno ${answered}/${n}`:""}</span></div>
+    <div class="bar"><i style="width:${(S.i+(locked?1:0))/n*100}%"></i></div>
+    <div class="panel">
+      <p class="qtext">${esc(it.q.q)}</p>
+      <div class="opts">${opts}</div>
+      ${fb}
+    </div>
+    <div class="row">
+      ${S.i>0?`<button class="btn ghost" data-act="prev">Natrag</button>`:""}
+      ${exam
+        ? (last?`<button class="btn" data-act="finish">Završi ispit</button>`:`<button class="btn" data-act="next">Dalje</button>`)
+        : `<button class="btn" data-act="next" ${locked?"":"disabled"}>${last?"Prikaži rezultat":"Dalje"}</button>`}
+      ${exam&&!last?`<button class="btn ghost" data-act="finish">Završi ispit</button>`:""}
+      <button class="btn ghost" data-act="quit">Izlaz</button>
+    </div>${nav}`;
+}
+
+function pick(pos){
+  const it = S.list[S.i];
+  if(S.mode==="exam"){ it.ans = pos; question(); return; }
+  if(it.ans!==null) return;
+  it.ans = pos;
+  const ok = pos===it.order.indexOf(0), w=getWrong();
+  if(ok) w.delete(it.q.id); else w.add(it.q.id);
+  setWrong(w); question();
+}
+
+function next(){
+  if(S.i<S.list.length-1){ S.i++; question(); }
+  else finish(false);
+}
+
+function finish(timeUp){
+  if(S.mode==="exam" && !timeUp){
+    const un = S.list.filter(x=>x.ans===null).length;
+    if(un && !confirm(`Imaš ${un} neodgovorenih pitanja. Završiti ispit?`)) return;
+  }
+  stopTimer(); $("#timer").hidden = true;
+  if(S.mode==="exam"){
+    const w=getWrong();
+    S.list.forEach(x=>{ if(x.ans!==null){ if(x.ans===x.order.indexOf(0)) w.delete(x.q.id); else w.add(x.q.id);} else w.add(x.q.id); });
+    setWrong(w);
+  }
+  S.done = true; S.timeUp = timeUp; S.onlyWrong = false; render();
+}
+
+function results(){
+  const n=S.list.length, correct=S.list.filter(x=>x.ans===x.order.indexOf(0)).length;
+  const pct = Math.round(correct/n*100);
+  let head;
+  if(S.mode==="exam"){
+    const pts = Math.round(correct/n*MAX_PTS*10)/10, pass = pts>=PASS_PTS;
+    head = `<p class="small">${S.timeUp?"Vrijeme je isteklo. ":""}Točno ${correct} od ${n}</p>
+      <div class="score ${pass?"pass":"fail"}">${pts.toString().replace(".",",")} / ${MAX_PTS}</div>
+      <p><b class="${pass?"pass":"fail"}">${pass?"Prolaz":"Nedovoljno"}</b> – prag je ${PASS_PTS} bodova, a to je otprilike ${Math.ceil(PASS_PTS/MAX_PTS*n)} točnih odgovora od ${n}.</p>`;
+  } else {
+    head = `<p class="small">Točno ${correct} od ${n}</p><div class="score ${pct>=50?"pass":"fail"}">${pct}%</div>`;
+  }
+  const items = S.list.map((x,k)=>({x,k,ok:x.ans===x.order.indexOf(0)})).filter(o=>!S.onlyWrong||!o.ok);
+  const list = items.map(({x,k,ok})=>{
+    const cp = x.order.indexOf(0);
+    const mine = x.ans===null ? "bez odgovora" : esc(x.q.opts[x.order[x.ans]]);
+    return `<div class="rev"><div class="q"><span class="tag ${ok?"ok":"bad"}">${ok?"točno":"netočno"}</span>${k+1}. ${esc(x.q.q)}</div>
+      ${ok?"":`<div class="small">Tvoj odgovor: ${mine}</div>`}
+      <div class="small">Točan odgovor: <b style="color:var(--ink)">${esc(x.q.opts[0])}</b></div>
+      <div class="small">${esc(x.q.e)}</div></div>`;
+  }).join("") || `<p class="small">Nema pogrešnih odgovora. Odlično.</p>`;
+  $("#app").innerHTML = `
+    <div class="panel">${head}
+      <div class="row"><button class="btn" data-act="home">Natrag na početak</button>
+      <button class="btn ghost" data-act="again">Ponovi ovaj način</button>
+      <button class="btn ghost" data-act="toggle">${S.onlyWrong?"Prikaži sve":"Samo pogrešni"}</button></div></div>
+    <div class="panel"><h2>Pregled odgovora</h2>${list}</div>`;
+}
+
+/* ---------- događaji ---------- */
+document.addEventListener("click", e=>{
+  const t = e.target.closest("button,input"); if(!t) return;
+  if(t.dataset.cat){ t.checked ? sel.add(t.dataset.cat) : sel.delete(t.dataset.cat); return; }
+  if(t.dataset.mode){ start(t.dataset.mode); return; }
+  if(t.dataset.pick!==undefined){ pick(+t.dataset.pick); return; }
+  if(t.dataset.go!==undefined){ S.i=+t.dataset.go; question(); return; }
+  switch(t.dataset.act){
+    case "next": next(); break;
+    case "prev": S.i--; question(); break;
+    case "finish": finish(false); break;
+    case "quit": if(confirm("Prekinuti kviz?")) home(); break;
+    case "home": home(); break;
+    case "again": start(S.mode); break;
+    case "toggle": S.onlyWrong=!S.onlyWrong; results(); break;
+  }
+});
+document.addEventListener("keydown", e=>{
+  if(!S || S.done || e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toUpperCase(), idx = "1234".indexOf(k)>=0 ? "1234".indexOf(k) : "ABCD".indexOf(k);
+  if(k.length===1 && idx>=0){ pick(idx); return; }
+  if(e.key==="ArrowRight"||e.key==="Enter"){
+    if(document.activeElement && document.activeElement.classList.contains("opt") && e.key==="Enter") return;
+    const it=S.list[S.i]; if(S.mode==="exam" || it.ans!==null){ e.preventDefault(); if(S.mode==="exam"&&S.i===S.list.length-1) return; next(); }
+  }
+  if(e.key==="ArrowLeft" && S.i>0){ S.i--; question(); }
+});
+
+home();
+</script>
+</body>
+</html>
