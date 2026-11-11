@@ -1,0 +1,1 @@
+Biti će slike paketa iz wiresharka i trebatće se prepoznati o kojem protokolu se radi. 
