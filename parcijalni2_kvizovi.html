@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="hr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2. parcijalni – Osnove kibernetičke sigurnosti</title>
+<style>
+:root{--bg:#f6f8f8;--c:#fff;--t:#1d2a2a;--m:#5b6b6b;--a:#0a4a7c;--ok:#1b7f3b;--no:#b3261e;--b:#d5dede;--pk:#0d1117;--pt:#c9d1d9}
+@media(prefers-color-scheme:dark){:root{--bg:#121717;--c:#1b2323;--t:#e6eeee;--m:#9bb0b0;--a:#6cb4ee;--ok:#5fd07f;--no:#ff8a80;--b:#334040}}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--t)}
+main{max-width:780px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:8px 0}.card{background:var(--c);border:1px solid var(--b);border-radius:10px;padding:16px;margin:12px 0}
+button{font:inherit;cursor:pointer;border:1px solid var(--a);background:var(--a);color:#fff;border-radius:8px;padding:9px 16px;margin:4px 4px 4px 0}
+button.s{background:transparent;color:var(--a)}
+.o{display:block;width:100%;text-align:left;background:var(--c);color:var(--t);border:1px solid var(--b);margin:6px 0}
+.o:hover{border-color:var(--a)}.o.ok{border-color:var(--ok);background:rgba(40,160,80,.15)}.o.no{border-color:var(--no);background:rgba(220,60,50,.15)}
+.m{color:var(--m);font-size:14px}.bar{display:flex;justify-content:space-between;align-items:center}
+#tm{font-weight:700;font-variant-numeric:tabular-nums}
+.pk{background:var(--pk);color:var(--pt);font:12.5px/1.45 ui-monospace,Menlo,Consolas,monospace;border-radius:8px;padding:10px;overflow-x:auto;margin:10px 0;white-space:pre}
+.pk .h{background:#1f6feb;color:#fff;display:block}.pk .g{color:#7ee787}.pk .d{color:#8b949e}
+</style></head><body><main>
+<h1>2. parcijalni – Osnove kibernetičke sigurnosti</h1>
+<div class="m">Moduli 5–12 (predavanja 3 i 4). Ispit: 15 pitanja, 10 min, 20 bodova, prolaz 10 bodova.</div>
+<div id="app"></div></main>
+<script>
+// Q: pitanje|točan|kriv1|kriv2|kriv3
+const Q=`Što su mrežni protokoli?|Pravila kojima se uređuje komunikacija|Fizički kabeli|Vrsta mrežnih uređaja|Programi za nadzor
+Koja opcija NIJE obilježje koje protokoli definiraju (kodiranje, formatiranje, veličina, vrijeme, opcije isporuke)?|Boja kabela|Kodiranje poruke|Veličina poruke|Vrijeme poruke
+Isporuka jedan-prema-jednom zove se:|Unicast|Multicast|Broadcast|Anycast
+Isporuka jedan-prema-svima zove se:|Broadcast|Unicast|Multicast|Simplex
+Isporuka jedan-prema-mnogima zove se:|Multicast|Unicast|Broadcast|Loopback
+Ograničena broadcast adresa je:|255.255.255.255|224.0.0.1|127.0.0.1|0.0.0.0
+Sloj OSI modela koji segmentira i ponovno sastavlja podatke:|Transportni (4)|Mrežni (3)|Sesijski (5)|Prezentacijski (6)
+Mrežni sloj u OSI modelu je sloj broj:|3|2|4|5
+Podatkovni (Data Link) sloj je sloj broj:|2|1|3|4
+Prezentacijski sloj OSI modela je broj:|6|5|7|4
+PDU na transportnom sloju zove se:|Segment|Paket|Okvir (frame)|Bitovi
+PDU na mrežnom sloju zove se:|Paket|Segment|Okvir|Podatak
+PDU na sloju podatkovne veze zove se:|Okvir (frame)|Paket|Segment|Bitovi
+PDU na fizičkom sloju su:|Bitovi|Okviri|Paketi|Segmenti
+Ako je transportni zaglavlje UDP, PDU se zove:|Datagram|Segment|Okvir|Paket
+TCP/IP model ima ukupno slojeva:|4|3|5|7
+Sloj TCP/IP modela koji određuje najbolji put kroz mrežu:|Internet|Transport|Network Access|Application
+Sloj TCP/IP modela koji upravlja hardverom i medijem:|Network Access|Internet|Transport|Application
+Koje adrese su potrebne za komunikaciju klijent-poslužitelj?|Port, IP i MAC adresa|Samo IP|Samo MAC|Samo port
+Transportni sloj aplikacije identificira pomoću:|Brojeva portova|MAC adresa|IP adresa|VLAN ID-ova
+Data Link sloj određuje uređaje na lokalnoj mreži pomoću:|MAC adresa|IP adresa|Portova|URL-ova
+Minimalna veličina standardnog Ethernet okvira je:|64 bajta|46 bajtova|128 bajtova|512 bajtova
+Maksimalna veličina standardnog (untagged) Ethernet okvira je:|1518 bajtova|1500 bajtova|9000 bajtova|65535 bajtova
+Okviri kraći od 64 bajta zovu se:|Runt okviri|Jumbo okviri|Giant okviri|Baby okviri
+Polje FCS u Ethernet okviru služi za:|Otkrivanje grešaka (CRC)|Sinkronizaciju|Adresu odredišta|Identifikaciju protokola
+Preamble i SFD služe za:|Sinkronizaciju pošiljatelja i primatelja|Provjeru pogrešaka|Šifriranje|Usmjeravanje
+Polje Type/Length u Ethernet okviru:|Identificira protokol višeg sloja|Sadrži CRC|Sadrži izvorišnu MAC adresu|Sadrži TTL
+MAC adresa je duga:|48 bitova (12 heksadecimalnih znamenki)|32 bita|64 bita|128 bitova
+IPv4 adresa je duga:|32 bita|48 bitova|64 bita|128 bitova
+IPv6 adresa je duga:|128 bitova|32 bita|64 bita|48 bitova
+Zaglavlje IPv4 paketa (bez opcija) ima:|20 bajtova|8 bajtova|12 bajtova|40 bajtova
+Polje TTL u IPv4 zaglavlju:|Ograničava broj skokova (smanjuje se na svakom usmjerivaču)|Određuje protokol višeg sloja|Sadrži adresu odredišta|Provjerava zaglavlje
+Polje Protocol u IPv4 zaglavlju:|Označava protokol sljedećeg sloja (TCP, UDP, ICMP)|Određuje TTL|Određuje QoS|Određuje duljinu
+IP adresiranje u paketu ostaje isto od izvora do odredišta, osim kada:|ga prevodi uređaj koji radi NAT|ga mijenja switch|ga mijenja hub|ga mijenja DNS poslužitelj
+Ping koristi poruke:|ICMP echo request i echo reply|ARP request i reply|DHCP discover i offer|SYN i ACK
+ICMP tip 8 je:|Echo request|Echo reply|Destination unreachable|Time exceeded
+ICMP tip 0 je:|Echo reply|Echo request|Redirect|Time exceeded
+ICMP tip 3 je:|Destination Unreachable|Redirect|Echo request|Time Exceeded
+ICMP tip 11 je:|Time Exceeded (TTL=0)|Redirect|Echo reply|Destination Unreachable
+ICMP tip 5 je:|Redirect|Echo reply|Time exceeded|Echo request
+ICMP je enkapsuliran:|Izravno u IP pakete|U TCP segmente|U UDP datagrame|U Ethernet okvir bez IP-a
+ARP služi za:|Pretvorbu IPv4 adrese u MAC adresu|Pretvorbu imena u IP|Dodjelu IP adresa|Šifriranje prometa
+ARP request se šalje kao:|Broadcast|Unicast|Multicast|Anycast
+ARP spoofing je napad u kojem napadač:|Lažira ARP odgovore da preusmjeri promet (npr. MitM)|Šalje lažne DHCP adrese|Lažira DNS odgovore|Preplavljuje SYN paketima
+Prednost TCP-a u odnosu na UDP:|Pouzdanost i kontrola toka|Manje zaglavlje|Bezstanje|Brži prijenos bez potvrda
+UDP zaglavlje ima:|8 bajtova (4 polja)|20 bajtova|12 bajtova|40 bajtova
+TCP zaglavlje (bez opcija) ima:|20 bajtova|8 bajtova|12 bajtova|32 bajta
+UDP je:|Bezspojni i bez stanja (stateless)|Spojni i sa stanjem|Pouzdan|Samo za e-poštu
+TCP je:|Sa stanjem (stateful)|Bezstanje|Bez potvrda|Bez sekvenciranja
+Koji promet najbolje odgovara UDP-u?|Video i glas uživo|Prijenos datoteka|E-pošta|Bankarske transakcije
+Socket je kombinacija:|IP adrese i broja porta|MAC adrese i IP adrese|Porta i VLAN-a|IP adrese i TTL-a
+Dva servisa istog transportnog protokola na istom poslužitelju:|Ne mogu koristiti isti port|Moraju koristiti isti port|Uvijek koriste port 80|Koriste isti socket
+TCP three-way handshake redoslijed:|SYN, SYN-ACK, ACK|SYN, ACK, FIN|ACK, SYN, SYN-ACK|SYN-ACK, SYN, ACK
+Nakon uspješnog handshakea stanje veze je:|ESTABLISHED|SYN-SENT|LISTEN|CLOSED
+Poruke DHCP-a redom:|DISCOVER, OFFER, REQUEST, ACK|OFFER, DISCOVER, ACK, REQUEST|REQUEST, OFFER, DISCOVER, ACK|DISCOVER, REQUEST, OFFER, NAK
+DHCPDISCOVER se šalje kao:|Broadcast|Unicast|Multicast|Anycast
+Poruka kojom poslužitelj odbija zahtjev klijenta:|DHCPNAK|DHCPOFFER|DHCPDISCOVER|DHCPACK
+DHCP poruke prenose se preko:|UDP-a|TCP-a|ICMP-a|ARP-a
+DHCP lease je:|Vrijeme na koje je adresa dodijeljena|Vrsta napada|Pool adresa|Broj klijenata
+DNS koristi port:|53 (UDP)|25|80|110
+DNS pretvara:|Imena domena u IP adrese|IP u MAC|MAC u IP|Port u IP
+Redoslijed pri DNS razrješenju:|Lokalni cache, zatim DNS poslužitelj, zatim viši poslužitelji|Root, pa lokalni cache|ARP, pa DNS|Odmah root poslužitelj
+Prijenos DNS podataka između poslužitelja zove se:|Zone transfer|Recursive query|Dynamic update|Cache poisoning
+WHOIS služi za:|Utvrđivanje vlasnika domene|Dodjelu IP adresa|Šifriranje|Praćenje paketa
+WHOIS je protokol koji koristi:|TCP|UDP|ICMP|ARP
+Raspon privatnih adresa je:|10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16|11.0.0.0/8|192.169.0.0/16|172.32.0.0/12
+NAT služi za:|Očuvanje javnih IPv4 adresa|Šifriranje|Nadzor mreže|Dodjelu MAC adresa
+PAT (NAT overload) razlikuje sesije pomoću:|Jedinstvenih izvorišnih portova|MAC adresa|TTL-a|VLAN-ova
+Trajno rješenje za iscrpljivanje IPv4 adresa je:|IPv6|NAT|DHCP|DNS
+FTP koristi:|Dvije veze – kontrolnu i podatkovnu|Jednu UDP vezu|Samo port 69|Samo ICMP
+TFTP koristi:|UDP port 69|TCP port 21|TCP port 22|UDP port 53
+SMB je:|Protokol za dijeljenje datoteka (klijent/poslužitelj)|Protokol za e-poštu|Protokol za VPN|Protokol za sinkronizaciju vremena
+SMTP koristi port:|25|110|143|80
+POP3 koristi port:|110 (TCP)|25|143|443
+POP3 poruke nakon preuzimanja:|Skida s poslužitelja|Ostavlja na poslužitelju|Šifrira|Šalje dalje
+IMAP poruke:|Ostaju na poslužitelju dok se ručno ne obrišu|Odmah se brišu|Šalju se SMTP-om|Ne mogu se organizirati u mape
+Za slanje e-pošte koristi se:|SMTP|POP3|IMAP|FTP
+HTTP koristi port:|80 (TCP)|443|53|21
+HTTP metoda za dohvat resursa:|GET|POST|PUT|OPTIONS
+HTTP status 200 znači:|OK – zahtjev uspješan|Not Found|Forbidden|Server Error
+HTTP status 404 znači:|Not Found|Forbidden|OK|Accepted
+HTTP status 403 znači:|Forbidden|Not Found|OK|Continue
+Kodovi 5xx označavaju:|Greška poslužitelja|Greška klijenta|Preusmjeravanje|Informaciju
+Kodovi 3xx označavaju:|Preusmjeravanje|Uspjeh|Grešku klijenta|Informaciju
+Dio URL-a iza znaka "?" zove se:|Query string|Fragment|Path|Port
+Dio URL-a iza znaka "#" zove se:|Fragment|Query|Domena|Shema
+HTTP/2 značajka:|Multipleksiranje i binarni protokol|Samo čisti tekst|Zahtijeva UDP|Nema kompresije zaglavlja
+HTTP/3 koristi:|QUIC preko UDP-a|TCP|ICMP|SCTP
+HTTPS štiti podatke pomoću:|TLS/SSL šifriranja|ARP-a|ACL-a|DHCP-a
+Što rade usmjerivači?|Određivanje puta i prosljeđivanje paketa|Rade samo na sloju 2|Dijele kolizijske domene|Filtriraju MAC adrese
+Usmjerivači rade na OSI sloju:|3|2|1|4
+Hub radi na sloju:|1 (fizičkom)|2|3|4
+Switch donosi odluke prema:|MAC adresama|IP adresama|Portovima|URL-ovima
+Switch uči MAC adrese iz:|Izvorišne MAC adrese okvira|Odredišne MAC adrese|IP zaglavlja|DHCP poruka
+Zadano vrijeme čuvanja MAC zapisa u tablici:|5 minuta|1 minuta|1 sat|24 sata
+Tablica MAC adresa na switchu zove se još:|CAM tablica|ARP tablica|Routing tablica|NAT tablica
+Svaki port switcha čini zaseban:|Kolizijski domenu|Broadcast domenu|VLAN|Zonu
+VLAN-ovi stvaraju:|Logičke broadcast domene|Fizičke kolizijske domene|Vatrozidne zone|VPN tunele
+STP služi za:|Sprječavanje petlji na sloju 2|Usmjeravanje|Šifriranje|Dodjelu adresa
+Blokirani STP port i dalje propušta:|BPDU okvire|Korisničke podatke|Sav promet|DHCP promet
+SVI je:|Virtualno sučelje VLAN-a na multilayer switchu|Fizički routed port|VPN sučelje|Tip kabela
+Routed port na switchu:|Radi kao sučelje usmjerivača i nije u VLAN-u|Podržava STP|Podržava podsučelja|Radi samo na sloju 2
+Tri sloja hijerarhijskog dizajna:|Access, Distribution, Core|Access, Edge, Core|LAN, MAN, WAN|Physical, Logical, Core
+Collapsed core spaja slojeve:|Core i Distribution|Access i Distribution|Access i Core|Sva tri
+LAN je mreža koja:|Pokriva malo zemljopisno područje|Pokriva velike udaljenosti uz više davatelja|Je uvijek bežična|Ima sporije veze od WAN-a
+WAN obično:|Administriraju više pružatelja usluga|Administrira jedna organizacija|Ima najveće brzine|Je ograničen na zgradu
+BGP se koristi:|Između ISP-ova|Unutar LAN-a|Za DHCP|Za DNS
+OSPF je protokol tipa:|Link state|Distance vector|Path vector|Hibrid zasnovan na TCP-u
+RIP je protokol tipa:|Distance vector|Link state|Path vector|Statički
+WLAN koristi metodu pristupa:|CSMA/CA|CSMA/CD|Token ring|ALOHA bez provjere
+Žičani Ethernet koristi:|CSMA/CD|CSMA/CA|RTS/CTS|Beacon
+Bežični klijent u CSMA/CA prije slanja šalje:|RTS|CTS|ACK|Beacon
+Poruka AP-a koja odobrava slanje:|CTS|RTS|Probe response|Beacon
+Tri faze povezivanja na AP:|Otkrivanje, autentifikacija, asocijacija|Skeniranje, VPN, NAT|ARP, DHCP, DNS|SYN, SYN-ACK, ACK
+Pasivno otkrivanje koristi:|Beacon okvire koje AP periodički emitira|Probe request|RTS/CTS|DHCP
+Aktivno otkrivanje koristi:|Probe request/response|Beacon|CTS|NAT
+Standard Wi-Fi 6:|802.11ax|802.11ac|802.11n|802.11be
+Standard Wi-Fi 7:|802.11be|802.11ax|802.11ac|802.11g
+Standard Wi-Fi 5:|802.11ac (5 GHz)|802.11n|802.11g|802.11b
+802.11 koristi frekvencije:|2.4, 5 i 6 GHz|Samo 900 MHz|Samo 60 THz|Samo 1 GHz
+Najviša razina sigurnosti Wi-Fi mreže:|WPA3|WEP|WPA|Otvorena mreža
+WLC upravlja:|Lightweight AP-ovima centralizirano|Samo DHCP-om|VLAN-ovima na žici|VPN tunelima
+Firewall:|Provodi politiku kontrole pristupa između mreža|Samo šifrira|Samo prosljeđuje|Zamjenjuje switch
+Tri dizajna vatrozida:|Public/Private, DMZ, Zone-Based Policy|Public, Hybrid, Core|DMZ, VPN, ACL|Stateful, Stateless, Proxy
+U DMZ-u se obično nalaze:|Javno dostupni poslužitelji|Samo privatni korisnici|Samo switchevi|Samo logovi
+Vatrozid koji filtrira prema L3 i L4 bez stanja:|Packet filtering (stateless)|Stateful|NGFW|Application gateway
+Najčešća vatrozidna tehnologija:|Stateful firewall|Stateless|Proxy|Hybrid
+Stateful firewall koristi:|State tablicu veza|Samo ACL|Samo MAC adrese|Samo DNS
+Application gateway (proxy) filtrira slojeve:|3, 4, 5 i 7|Samo 2|Samo 1|Samo 3
+NGFW dodaje:|Integrirani IPS i prepoznavanje aplikacija|Samo ACL|Samo NAT|Samo L2 filtriranje
+Nedostatak vatrozida:|Može postati jedinstvena točka kvara|Ne blokira promet|Ubrzava mrežu|Ne podržava NAT
+IDS:|Nadzire i alarmira; ne zaustavlja okidajuće pakete|Zaustavlja okidajuće pakete|Šifrira|Usmjerava
+IPS:|Može zaustaviti okidajuće pakete|Ne utječe na mrežu|Samo alarmira|Nije u liniji prometa
+Prednost IDS-a:|Ne ometa/opterećuje rad mreže|Zaustavlja pakete|Uvijek sprječava napade|Ima latenciju
+Nedostatak IPS-a:|Može utjecati na mrežu (latencija, jitter)|Ne zaustavlja pakete|Ne može normalizirati tokove|Ne može reagirati
+HIPS je:|Softver na hostu|Namjenski mrežni uređaj|Vatrozid|Switch
+Primjer IDS/IPS alata:|Snort i Suricata|Wireshark i ping|Syslog i NTP|DHCP i DNS
+ACL je:|Popis naredbi koje dopuštaju/odbijaju pakete prema zaglavlju|Šifrirana datoteka|Dinamički routing protokol|VPN tunel
+Standard ACL filtrira prema:|Izvorišnoj IPv4 adresi|Odredišnom portu|Protokolu|SYN bitu
+Extended ACL može filtrirati prema:|Protokolu, adresama i portovima|Samo izvoru|Samo MAC adresi|.exe datotekama
+Stavka na temelju koje ACL filtrira promet:|SYN bit|.exe datoteka|L2 protokol|MAC adresa
+SNMP:|Manager i agenti za nadzor uređaja|Sinkronizira vrijeme|Šalje e-poštu|Šifrira promet
+NetFlow šalje statistike na:|NetFlow collector|Syslog|NTP poslužitelj|DHCP poslužitelj
+Kopiranje prometa s jednog porta na drugi:|Port mirroring|Port forwarding|Port copy|Port scanning
+Syslog se koristi za:|Slanje sistemskih poruka na poslužitelj|Sinkronizaciju vremena|Dodjelu adresa|Šifriranje
+NTP koristi hijerarhiju zvanu:|Stratum|Zona|Layer|Domena
+Stratum 0 su:|Autoritativni izvori vremena|Klijenti|Switchevi|DNS poslužitelji
+AAA je:|Authentication, Authorization, Accounting|Access, Allow, Audit|Address, Assign, Allow|Admin, Auth, ACL
+Autorizacija određuje:|Kojim resursima korisnik smije pristupiti|Tko je korisnik|Što je korisnik radio|Brzinu veze
+Accounting bilježi:|Što korisnik radi i koliko dugo|Lozinku|Dopuštenja|IP adresu
+TACACS+ koristi:|TCP|UDP|ICMP|ARP
+RADIUS koristi:|UDP|TCP|ICMP|SCTP
+TACACS+ šifrira:|Cijeli paket|Samo lozinku|Ništa|Samo zaglavlje
+RADIUS šifrira:|Samo lozinku|Cijeli paket|Ništa|Samo accounting
+Standard RADIUS-a je:|Otvoreni (RFC)|Cisco proprietarni|Samo za bežične mreže|Samo za VPN
+Za autorizaciju naredbi po korisniku bolji je:|TACACS+|RADIUS|SNMP|NTP
+VPN je:|Privatna mreža preko javne mreže|Vrsta vatrozida|DHCP usluga|Fizički kabel
+Povjerljivost u VPN-u postiže se:|Šifriranjem prometa|Switchem|NAT-om|DHCP-om
+Kada klijent dobije lažne podatke o IP adresi, DNS-u i gatewayu:|DHCP Spoofing|ARP Spoofing|DNS Spoofing|DHCP Flux
+ICMP echo request s lažiranom IP adresom na mnogo hostova je:|Spoofing napad|Izvidnički napad|TCP napad|Man in the middle napad
+Napadač lažira MAC/IP u ARP odgovorima radi presretanja prometa:|ARP spoofing / MitM|DHCP starvation|DNS tunneling|SYN scan`.split("\n").map(l=>{const a=l.split("|");return{t:"q",q:a[0],c:a[1],o:a.slice(1)}});
+
+// Paketi (slike iz Wireshark-a). Prva linija zaglavlja = lista paketa; ostale = detalji
+const E=(s,d)=>`Frame 1: 74 bytes on wire\nEthernet II, Src: ${s}, Dst: ${d}`;
+const P=[
+["ARP",`Who has 192.168.1.7? Tell 192.168.1.5`,E("00:0c:29:aa:11:22","ff:ff:ff:ff:ff:ff")+`\n▸ ???\n    Hardware type: Ethernet (1)\n    Protocol type: IPv4 (0x0800)\n    Opcode: request (1)\n    Sender IP: 192.168.1.5\n    Target MAC: 00:00:00:00:00:00\n    Target IP: 192.168.1.7`,["ARP","DHCP","ICMP","DNS"]],
+["DHCP",`DHCP Discover - Transaction ID 0x3d1e`,E("00:0c:29:aa:11:22","ff:ff:ff:ff:ff:ff")+`\nInternet Protocol, Src: 0.0.0.0, Dst: 255.255.255.255\nUser Datagram Protocol, Src Port: 68, Dst Port: 67\n▸ ???\n    Message type: Boot Request (1)\n    Client MAC: 00:0c:29:aa:11:22\n    Option 53: DHCP Message Type (Discover)\n    Option 55: Parameter Request List`,["DHCP","DNS","ARP","TFTP"]],
+["DNS",`Standard query 0xa1b2 A www.cisco.com`,E("00:0c:29:aa:11:22","00:50:56:c0:00:08")+`\nInternet Protocol, Src: 192.168.1.5, Dst: 192.168.1.1\nUser Datagram Protocol, Src Port: 51833, Dst Port: 53\n▸ ???\n    Flags: 0x0100 Standard query\n    Questions: 1\n    Queries: www.cisco.com: type A, class IN`,["DNS","DHCP","HTTP","SMTP"]],
+["TCP SYN",`51200 → 80 [SYN] Seq=0 Win=64240`,E("00:0c:29:aa:11:22","00:50:56:c0:00:08")+`\nInternet Protocol, Src: 192.168.1.5, Dst: 93.184.216.34, TTL: 128\n▸ ???, Src Port: 51200, Dst Port: 80\n    Sequence number: 0\n    Acknowledgment number: 0\n    Flags: 0x002 (SYN)\n    Window: 64240`,["TCP (SYN – početak handshakea)","UDP","ICMP","ARP"]],
+["ICMP echo",`Echo (ping) request id=0x0001, seq=1, ttl=128`,E("00:0c:29:aa:11:22","00:50:56:c0:00:08")+`\nInternet Protocol, Src: 192.168.1.5, Dst: 8.8.8.8\n    Protocol: ??? (1)\n▸ ???\n    Type: 8 (Echo (ping) request)\n    Code: 0\n    Data (32 bytes)`,["ICMP","UDP","TCP","ARP"]],
+["HTTP",`GET /index.html HTTP/1.1`,E("00:0c:29:aa:11:22","00:50:56:c0:00:08")+`\nInternet Protocol, Src: 192.168.1.5, Dst: 209.165.201.1\nTransmission Control Protocol, Dst Port: 80, [PSH, ACK]\n▸ ???\n    GET /index.html HTTP/1.1\n    Host: www.cisco.com\n    User-Agent: Mozilla/5.0`,["HTTP","HTTPS/TLS","FTP","SMTP"]],
+["TLS",`Client Hello (SNI=www.cisco.com)`,E("00:0c:29:aa:11:22","00:50:56:c0:00:08")+`\nInternet Protocol, Src: 192.168.1.5, Dst: 209.165.201.1\nTransmission Control Protocol, Dst Port: 443, [PSH, ACK]\n▸ ???\n    Handshake Protocol: Client Hello\n    Version: TLS 1.3\n    Cipher Suites (3)`,["TLS (HTTPS)","HTTP","SSH","DNS"]],
+["TFTP",`Read Request, File: router-confg, Transfer type: octet`,E("00:0c:29:aa:11:22","00:50:56:c0:00:08")+`\nInternet Protocol, Src: 192.168.1.5, Dst: 192.168.1.20\nUser Datagram Protocol, Dst Port: 69\n▸ ???\n    Opcode: Read Request (1)\n    Source File: router-confg`,["TFTP","FTP","SMB","DHCP"]],
+["SMTP",`C: MAIL FROM:<student@tvz.hr>`,E("00:0c:29:aa:11:22","00:50:56:c0:00:08")+`\nInternet Protocol, Src: 192.168.1.5, Dst: 192.168.1.25\nTransmission Control Protocol, Dst Port: 25, [PSH, ACK]\n▸ ???\n    Command: MAIL FROM:<student@tvz.hr>\n    Command: RCPT TO:<recipient@cisco.com>`,["SMTP","POP3","IMAP","HTTP"]],
+["POP3",`S: +OK POP3 server ready`,E("00:50:56:c0:00:08","00:0c:29:aa:11:22")+`\nInternet Protocol, Src: 192.168.1.25, Dst: 192.168.1.5\nTransmission Control Protocol, Src Port: 110\n▸ ???\n    Response: +OK POP3 server ready\n    Request: USER student\n    Request: RETR 1`,["POP3","SMTP","IMAP","FTP"]],
+["FTP",`Request: USER anonymous`,E("00:0c:29:aa:11:22","00:50:56:c0:00:08")+`\nInternet Protocol, Src: 192.168.1.5, Dst: 192.168.1.30\nTransmission Control Protocol, Dst Port: 21, [PSH, ACK]\n▸ ???\n    Request command: USER\n    Request arg: anonymous`,["FTP","TFTP","SMTP","SMB"]],
+["SYSLOG",`LOCAL7.NOTICE: %SYS-5-CONFIG_I: Configured from console`,E("00:0c:29:aa:11:22","00:50:56:c0:00:08")+`\nInternet Protocol, Src: 192.168.1.1, Dst: 192.168.1.50\nUser Datagram Protocol, Dst Port: 514\n▸ ???\n    Facility: LOCAL7 (23), Severity: Notice (5)\n    Message: %SYS-5-CONFIG_I`,["Syslog","SNMP","NTP","DNS"]],
+["NTP",`NTP Version 4, client`,E("00:0c:29:aa:11:22","00:50:56:c0:00:08")+`\nInternet Protocol, Src: 192.168.1.1, Dst: 192.168.1.60\nUser Datagram Protocol, Dst Port: 123\n▸ ???\n    Mode: client (3)\n    Stratum: unspecified (0)\n    Transmit Timestamp`,["NTP","Syslog","SNMP","TFTP"]],
+["SNMP",`get-request 1.3.6.1.2.1.1.1.0`,E("00:0c:29:aa:11:22","00:50:56:c0:00:08")+`\nInternet Protocol, Src: 192.168.1.50, Dst: 192.168.1.1\nUser Datagram Protocol, Dst Port: 161\n▸ ???\n    community: public\n    data: get-request`,["SNMP","Syslog","NTP","RADIUS"]],
+["RADIUS",`Access-Request id=7`,E("00:0c:29:aa:11:22","00:50:56:c0:00:08")+`\nInternet Protocol, Src: 192.168.1.1, Dst: 192.168.1.70\nUser Datagram Protocol, Dst Port: 1812\n▸ ???\n    Code: Access-Request (1)\n    AVP: User-Name = student`,["RADIUS","TACACS+","SNMP","DHCP"]],
+["TACACS+",`Authentication: Start`,E("00:0c:29:aa:11:22","00:50:56:c0:00:08")+`\nInternet Protocol, Src: 192.168.1.1, Dst: 192.168.1.70\nTransmission Control Protocol, Dst Port: 49\n▸ ???\n    Type: Authentication (1)\n    Flags: Encrypted payload`,["TACACS+","RADIUS","SNMP","SMTP"]]
+].map(p=>({t:"p",title:p[0],list:p[1],det:p[2],c:p[3][0],o:p[3]}));
+const X=`Protokoli su skup pravila (kodiranje, format, veličina, vrijeme, isporuka) koja uređaji moraju poštovati.
+Boja kabela nije dio protokola; protokoli definiraju kodiranje, formatiranje, veličinu, vrijeme i opcije isporuke.
+Unicast = jedan pošiljatelj, jedan primatelj.
+Broadcast = poruka ide svim hostovima u mreži.
+Multicast = poruka ide odabranoj grupi hostova (jedan-prema-mnogima).
+Limited broadcast koristi odredište 255.255.255.255.
+Transportni sloj (4) segmentira, prenosi i ponovno sastavlja podatke.
+OSI: 7 App, 6 Pres, 5 Sess, 4 Transp, 3 Network, 2 Data Link, 1 Physical.
+Data Link je sloj 2 (okviri, MAC adrese).
+Prezentacijski sloj je 6 (prikaz/format podataka).
+Segment je PDU transportnog sloja (TCP).
+Paket je PDU mrežnog sloja (IP).
+Okvir (frame) je PDU sloja podatkovne veze.
+Fizički sloj prenosi bitove.
+TCP segment, a UDP datagram.
+TCP/IP: Application, Transport, Internet, Network Access = 4 sloja.
+Internet sloj bira najbolji put (IP, usmjeravanje).
+Network Access upravlja hardverom i medijem.
+Potrebni su port (transport), IP (mreža) i MAC (veza) adresa.
+Transport koristi brojeve portova za identifikaciju aplikacija.
+Sloj 2 koristi MAC adrese za lokalnu isporuku okvira.
+Minimum 64 bajta (od odredišne MAC do FCS-a).
+Maksimum 1518 bajta za untagged okvir (1500 podataka + zaglavlje + FCS).
+Okviri < 64 bajta su runt i odbacuju se.
+FCS koristi CRC za otkrivanje grešaka u okviru.
+Preamble/SFD sinkroniziraju pošiljatelja i primatelja.
+Type/Length označava protokol višeg sloja (npr. IPv4).
+MAC = 48 bita = 12 heksadecimalnih znamenki.
+IPv4 = 32 bita.
+IPv6 = 128 bitova.
+IPv4 zaglavlje bez opcija je 20 bajtova.
+TTL se smanjuje na svakom usmjerivaču; kad padne na 0, paket se odbacuje.
+Protocol polje kaže što je u payloadu (TCP=6, UDP=17, ICMP=1).
+NAT je jedini slučaj kad se IP adresa mijenja na putu.
+Ping koristi ICMP echo request/reply.
+Tip 8 = echo request (ping).
+Tip 0 = echo reply.
+Tip 3 = destination unreachable.
+Tip 11 = time exceeded (TTL je došao do 0).
+Tip 5 = redirect (koristi drugu rutu).
+ICMP ide izravno u IP paket (IP protokol 1).
+ARP preslikava poznati IPv4 u nepoznati MAC na lokalnoj mreži.
+ARP request ide na ff:ff:ff:ff:ff:ff, pa ga primaju svi.
+ARP spoofing šalje lažne ARP odgovore pa napadač presreće promet.
+TCP je pouzdan: potvrde, retransmisija, sekvenciranje, kontrola toka.
+UDP ima samo 4 polja (porti, duljina, checksum) = 8 B.
+TCP zaglavlje je minimalno 20 B (160 bita).
+UDP ne prati stanje ni vezu.
+TCP prati stanje sesije (uspostava, prijenos, prekid).
+Video/glas toleriraju gubitke, a trebaju brzinu, pa UDP.
+Socket = IP adresa + port.
+Jedan port ne može služiti dvama servisima istog transportnog protokola.
+Handshake: SYN, SYN-ACK, ACK.
+Nakon ACK-a obje strane prelaze u ESTABLISHED.
+DHCP: Discover, Offer, Request, Ack (DORA).
+Klijent još nema IP pa Discover šalje broadcastom.
+DHCPNAK znači da ponuda više nije valjana.
+DHCP je enkapsuliran u UDP (portovi 67/68).
+Lease je razdoblje na koje se IP posuđuje klijentu.
+DNS koristi UDP port 53.
+DNS mapira domenska imena na IP adrese.
+Prvo lokalni cache, pa DNS poslužitelj, pa viši (rekurzivni upiti).
+Zone transfer = prijenos DNS podataka između poslužitelja.
+WHOIS otkriva registraciju/vlasnika domene.
+WHOIS je TCP protokol.
+Privatni rasponi: 10/8, 172.16/12, 192.168/16.
+NAT štedi javne IPv4 adrese prevodeći privatne u javne.
+PAT dodaje jedinstvene izvorišne portove da razlikuje sesije.
+IPv6 je trajno rješenje za nedostatak IPv4 adresa.
+FTP: kontrolna veza + zasebna podatkovna veza.
+TFTP je pojednostavljen FTP preko UDP porta 69.
+SMB dijeli datoteke, pisače i druge resurse (zahtjev/odgovor).
+SMTP koristi TCP port 25.
+POP3 koristi TCP port 110.
+POP3 preuzme poruke i briše ih s poslužitelja.
+IMAP ostavlja kopije na poslužitelju i sinkronizira brisanje.
+SMTP šalje poštu; POP3/IMAP je dohvaćaju.
+HTTP koristi TCP port 80 (nije siguran).
+GET traži resurs od poslužitelja.
+2xx = uspjeh; 200 OK.
+404 = resurs nije pronađen.
+403 = razumije zahtjev, ali zabranjen pristup.
+5xx = greška na poslužitelju.
+3xx = preusmjeravanje.
+Query string počinje znakom ?, npr. ?docid=973285&format=mp4.
+Fragment počinje znakom #, označava dio resursa.
+HTTP/2 ima multipleksiranje, binarni format, server push i kompresiju zaglavlja.
+HTTP/3 koristi QUIC preko UDP-a (TLS 1.3).
+HTTPS = HTTP preko TLS/SSL-a (autentikacija + šifriranje).
+Usmjerivač određuje put i prosljeđuje pakete.
+Usmjerivači rade na sloju 3 (IP).
+Hub je repetitor na fizičkom sloju, šalje na sve portove.
+Switch prosljeđuje prema odredišnoj MAC adresi.
+Switch uči iz izvorišne MAC adrese i ulaznog porta.
+Zapis u MAC tablici zadano traje 5 minuta.
+MAC tablica = CAM (Content Addressable Memory).
+Svaki port switcha je zaseban kolizijski domena.
+VLAN je logička podjela s odvojenom broadcast domenom.
+STP blokira redundantne putove i sprječava petlje.
+Blokirani port propušta samo BPDU, ne korisničke podatke.
+SVI je virtualno L3 sučelje VLAN-a za inter-VLAN usmjeravanje.
+Routed port je pravi L3 port; nema L2 (STP) ni podsučelja.
+Access, Distribution, Core.
+Collapsed core spaja Core i Distribution (jeftinije, jednostavnije).
+LAN pokriva malo područje, brz, jedna organizacija.
+WAN pokriva veliko područje, sporiji, više pružatelja.
+BGP razmjenjuje rute između ISP-ova (EGP).
+OSPF je link-state IGP.
+RIP je distance-vector IGP (1988).
+Wi-Fi ne može slušati dok šalje pa izbjegava kolizije (CSMA/CA).
+Žičani Ethernet otkriva kolizije (CSMA/CD).
+Klijent prvo šalje RTS AP-u.
+AP odgovara CTS-om i dopušta slanje.
+Otkrivanje, autentikacija, asocijacija.
+Pasivno: AP emitira beacon s SSID-om.
+Aktivno: klijent šalje probe request, AP odgovara.
+Wi-Fi 6 = 802.11ax (2019).
+Wi-Fi 7 = 802.11be (2024), uključuje 6 GHz.
+Wi-Fi 5 = 802.11ac (samo 5 GHz).
+Wi-Fi koristi 2.4, 5 i 6 GHz pojaseve.
+WPA3 je najjača trenutna zaštita.
+WLC centralizira upravljanje; AP-ovi su lightweight.
+Firewall provodi politiku pristupa; sav promet prolazi kroz njega.
+Dizajni: public/private, DMZ, zone-based policy.
+DMZ drži javno dostupne servere izdvojeno od privatne mreže.
+Packet filter: L3/L4, bez stanja (tablica pravila).
+Stateful je najčešći; prati stanje veza.
+Stateful koristi state tablicu veza.
+Proxy firewall filtrira na slojevima 3, 4, 5 i 7.
+NGFW = stateful + IPS + prepoznavanje aplikacija.
+Pogrešna konfiguracija ili kvar: single point of failure.
+IDS samo detektira i alarmira, nije u liniji prometa.
+IPS je u liniji pa može blokirati pakete.
+IDS ne utječe na mrežu (latencija, jitter, kvar senzora).
+IPS može utjecati na mrežu jer je u liniji.
+HIPS je softver na samom hostu (ovisan o OS-u).
+Snort i Suricata su poznati IDS/IPS alati.
+ACL dopušta/odbija pakete prema zaglavlju.
+Standard ACL filtrira samo po izvorišnoj IPv4 adresi.
+Extended ACL: protokol, izvor/odredište, portovi.
+ACL gleda zaglavlja (L3/L4), npr. TCP SYN bit; ne MAC adrese ni sadržaj datoteka.
+SNMP: manager + agenti za nadzor uređaja.
+NetFlow statistiku šalje na NetFlow collector.
+Port mirroring kopira promet na port s monitorom.
+Syslog šalje sistemske poruke na syslog poslužitelj.
+NTP hijerarhija = strata.
+Stratum 0 su autoritativni izvori (npr. atomski sat/GPS).
+AAA = autentikacija, autorizacija, accounting.
+Autorizacija = što korisnik smije.
+Accounting = što je korisnik radio i koliko dugo.
+TACACS+ koristi TCP (port 49).
+RADIUS koristi UDP.
+TACACS+ šifrira cijeli paket.
+RADIUS šifrira samo lozinku.
+RADIUS je otvoreni standard, TACACS+ je većinom Cisco.
+TACACS+ može autorizirati naredbe po korisniku/grupi.
+VPN = privatna mreža preko javne (Internet).
+Povjerljivost VPN-a = šifriranje prometa.
+DHCP spoofing: lažni DHCP poslužitelj daje krive IP/DNS/gateway podatke.
+Lažirana izvorišna IP adresa = spoofing napad.
+ARP spoofing omogućuje presretanje prometa (MitM).`.split("\n"),PX=`Ethernet dst je ff:ff:ff:ff:ff:ff (broadcast), opcode request, "Who has 192.168.1.7?" – to je ARP (L2/L3 posrednik, nema IP/UDP zaglavlja).
+Src 0.0.0.0, dst 255.255.255.255, UDP 68→67, Message type Discover – DHCP.
+UDP odredišni port 53, upit tipa A za domenu – DNS.
+TCP s flagom SYN, Seq=0, Ack=0 – prvi korak three-way handshakea; odredišni port 80.
+IP protokol 1, type 8 (echo request) – ICMP, ping; nema portova.
+TCP dst port 80 i tekst GET /index.html HTTP/1.1 – HTTP.
+TCP dst port 443, Client Hello, TLS 1.3 – HTTPS (TLS) handshake.
+UDP dst port 69, Read Request, ime datoteke – TFTP.
+TCP dst port 25, MAIL FROM/RCPT TO – SMTP (slanje pošte).
+TCP port 110, +OK, USER, RETR – POP3 (preuzimanje pošte).
+TCP dst port 21, USER anonymous – FTP kontrolna veza.
+UDP port 514, facility/severity – Syslog.
+UDP port 123, stratum, timestamp – NTP.
+UDP port 161, community, get-request – SNMP.
+UDP port 1812, Access-Request, AVP – RADIUS.
+TCP port 49, Authentication Start, šifrirani payload – TACACS+.`.split("\n");Q.forEach((q,i)=>q.e=X[i]);P.forEach((q,i)=>q.e=PX[i]);
+const ALL=[...Q,...P];
+const sh=a=>a.map(x=>[Math.random(),x]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+const $=id=>document.getElementById(id),app=$("app");
+let S;
+function menu(){clearInterval(S&&S.iv);S=null;
+app.innerHTML=`<div class="card"><h3>Odaberi način</h3>
+<button onclick="start('exam')">Ispit (15 pitanja, 10 min)</button>
+<button class="s" onclick="start('all')">Vježba – sva pitanja (${ALL.length})</button>
+<button class="s" onclick="start('pk')">Samo paketi (${P.length})</button>
+<p class="m">Ispit: 15 nasumičnih pitanja (barem 4 iz paketa), bodovi = točni × 20/15, prolaz ≥ 10.</p></div>`}
+function start(m){let L;
+ if(m=="exam"){L=sh(P).slice(0,4).concat(sh(Q).slice(0,11));L=sh(L)}
+ else if(m=="pk")L=sh(P);else L=sh(ALL);
+ S={m,L,i:0,ok:0,t:600};
+ if(m=="exam"){S.iv=setInterval(()=>{S.t--;const e=$("tm");if(e)e.textContent=fmt(S.t);if(S.t<=0)end()},1000)}
+ show()}
+const fmt=s=>Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+function pk(x){return`<div class="pk"><span class="h"> No.  Time   Source        Destination   Info\n   1  0.000  ${x.list.length?"":""}…  →  …   ${x.list.replace(/</g,"&lt;")}</span><span class="d">${x.det.replace(/</g,"&lt;").replace("▸ ???","<span class=g>▸ ??? (koji protokol?)</span>")}</span></div>`}
+function show(){const x=S.L[S.i];if(!x)return end();
+ const o=sh(x.o.slice());
+ app.innerHTML=`<div class="card"><div class="bar"><span class="m">Pitanje ${S.i+1}/${S.L.length} · točno: ${S.ok}</span>${S.m=="exam"?`<span id="tm">${fmt(S.t)}</span>`:""}</div>
+ <h3>${x.t=="p"?"Prepoznaj protokol na slici paketa:":x.q}</h3>${x.t=="p"?pk(x):""}
+ <div id="op">${o.map(v=>`<button class="o" data-v="${v.replace(/"/g,"&quot;")}">${v}</button>`).join("")}</div>
+ <div id="fb"></div></div>`;
+ document.querySelectorAll(".o").forEach(b=>b.onclick=()=>ans(b,x))}
+function ans(b,x){const ok=b.dataset.v==x.c;if(ok)S.ok++;
+ document.querySelectorAll(".o").forEach(e=>{e.disabled=true;if(e.dataset.v==x.c)e.classList.add("ok")});
+ if(!ok)b.classList.add("no");
+ $("fb").innerHTML=`<p>${ok?"✔ Točno":"✘ Netočno – točan odgovor: <b>"+x.c+"</b>"}</p><p class=m>💡 ${x.e}</p><button onclick="S.i++;show()">Dalje →</button>`}
+function end(){clearInterval(S.iv);const n=S.L.length,pts=S.m=="exam"?(S.ok*20/15):null;
+ app.innerHTML=`<div class="card"><h2>Rezultat</h2><p>Točno: <b>${S.ok}/${S.i>=n?n:S.i}</b></p>
+ ${pts!==null?`<p>Bodovi: <b>${pts.toFixed(1)}/20</b> – ${pts>=10?"<span style=color:var(--ok)>PROLAZ</span>":"<span style=color:var(--no)>PAD</span>"}</p>`:""}
+ <button onclick="menu()">Natrag na izbornik</button></div>`}
+menu();
+</script></body></html>
