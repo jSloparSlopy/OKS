@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IoT labovi – ponavljanje</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--text:#1c2430;--muted:#5b6675;--accent:#1f6feb;--line:#dde2e9;--code:#eef1f5}
+@media (prefers-color-scheme:dark){:root{--bg:#12161c;--card:#1b222c;--text:#e6eaf0;--muted:#9aa6b5;--accent:#6ea8ff;--line:#2d3745;--code:#252e3a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:820px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:1.6rem;margin:.4em 0 .2em}
+h2{font-size:1.25rem;margin:1.8em 0 .6em;padding-bottom:.3em;border-bottom:2px solid var(--accent)}
+.sub{color:var(--muted);margin:0 0 1em}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:8px 14px;font:inherit;cursor:pointer}
+button.alt{background:var(--card);color:var(--text);border:1px solid var(--line)}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:10px 0;padding:0}
+summary{cursor:pointer;padding:12px 14px;font-weight:600;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸ ";color:var(--accent)}
+details[open] summary::before{content:"▾ "}
+.a{padding:0 14px 14px;border-top:1px solid var(--line)}
+.a p{margin:.7em 0}
+.a ul,.a ol{margin:.5em 0;padding-left:1.3em}
+code{background:var(--code);padding:2px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:.92em;word-break:break-word}
+.tag{display:inline-block;font-size:.75rem;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:0 6px;margin-left:6px;font-weight:400}
+.note{color:var(--muted);font-size:.92rem}
+a{color:var(--accent);word-break:break-all}
+h3{font-size:1.05rem;margin:1em 0 .3em}
+</style>
+</head>
+<body>
+<main>
+<h1>IoT labovi – ponavljanje</h1>
+<p class="sub">Shodan, Smart Home u Packet Traceru i napadi na IoT uređaje. Klikni na pitanje da vidiš odgovor.</p>
+<div class="bar">
+<button onclick="toggleAll(true)">Otvori sve</button>
+<button class="alt" onclick="toggleAll(false)">Zatvori sve</button>
+</div>
+
+<h2>Lab 1: Shodan Search</h2>
+<p class="note">Oznaka „broj“ znači da vrijednost čitaš na svom Shodan računu jer se stalno mijenja. Nikada se ne prijavljuj na pronađene uređaje.</p>
+
+<details><summary>1. Koliko rezultata za „cisco“?<span class="tag">broj</span></summary><div class="a"><p>Upiši Total Results koji vidiš. Obično je to nekoliko milijuna.</p></div></details>
+
+<details><summary>2. Koliko rezultata za Windows u lijevom izborniku?<span class="tag">broj</span></summary><div class="a"><p>Pogledaj Top Operating Systems i upiši broj uz Windows.</p></div></details>
+
+<details><summary>3. Napad iz 2017. na starije Windowse: ime, meta, što je radio?</summary><div class="a"><p>WannaCry, svibanj 2017. Ciljao je nezakrpana Windows računala, uključujući starije verzije poput XP-a, preko SMBv1 ranjivosti EternalBlue. Šifrirao je datoteke, tražio otkupninu u Bitcoinu i širio se mrežom kao crv. Microsoft je zakrpu već bio objavio, pa su stradali samo nezakrpani sustavi.</p></div></details>
+
+<details><summary>4. Podaci o jednom unosu: IP, hostname, ISP, datum, država<span class="tag">broj</span></summary><div class="a"><p>Prepiši iz bilo kojeg unosa koji odabereš.</p></div></details>
+
+<details><summary>5. Grad, otvoreni portovi, servisi<span class="tag">broj</span></summary><div class="a"><p>Klikni Details na unosu i prepiši. Tipično su to port 22 SSH i port 80 HTTP.</p></div></details>
+
+<details><summary>6. Total Results za „webcam“<span class="tag">broj</span></summary><div class="a"><p>Upiši broj koji vidiš.</p></div></details>
+
+<details><summary>7. Total Results za „refrigerator“<span class="tag">broj</span></summary><div class="a"><p>Upiši broj koji vidiš.</p></div></details>
+
+<details><summary>8. Port Minecraft servera i ISO kod Južne Afrike</summary><div class="a"><p>Port je 25565, a kod za Južnu Afriku je ZA.</p></div></details>
+
+<details><summary>9. Pretraga za Minecraft servere u Južnoj Africi i njihov broj</summary><div class="a"><p>Pretraga: <code>country:ZA port:25565</code></p><p>Broj servera je Total Results gore lijevo. Ako ne radi, probaj <code>country:ZA minecraft</code>.</p></div></details>
+
+<details><summary>10. FTP serveri s anonimnom prijavom u San Joseu</summary><div class="a"><p>Pretraga: <code>port:21 country:US city:"San Jose" "230 login successful"</code></p><p>Jednostavnija varijanta: <code>ftp anonymous city:"San Jose"</code></p><p>Total results je broj gore lijevo.</p></div></details>
+
+<details><summary>11. Filtriranje po rasponu IP adresa i Mr. Robot</summary><div class="a"><p>Raspon IP adresa: filter <code>net:</code> s CIDR zapisom, na primjer <code>net:192.0.2.0/24</code></p><p>Niz iz serije: <code>org:"Evil Corp" product:"Apache Tomcat"</code></p><p>Radi li? Dijelom. Dio <code>product:"Apache Tomcat"</code> radi i vraća prave rezultate. Izmišljena tvrtka ne vraća ništa, pa nema stvarne IP adrese. Filteri traže registrirani račun.</p></div></details>
+
+<details><summary>12. Pretraga kamera u Hrvatskoj i rizici<span class="tag">broj</span></summary><div class="a"><p>Pretraga: <code>country:HR camera</code>. Broj rezultata je Total Results.</p><p>Rizici:</p><ul>
+<li>Stranci mogu gledati privatne prostore, što je povreda privatnosti i olakšava uhođenje ili planiranje provale.</li>
+<li>Zadane ili slabe lozinke omogućuju lako preuzimanje uređaja.</li>
+<li>Nezakrpani firmver može se iskoristiti.</li>
+<li>Hakirane kamere postaju dio botneta, na primjer Mirai, ili ulaz u kućnu mrežu.</li></ul></div></details>
+
+<h2>Lab 2: Packet Tracer – Smart Home</h2>
+
+<details><summary>13. Na koje uređaje se spajaju dva koaksijalna kabela iz splittera?</summary><div class="a"><p>Na Cable Modem0 za podatke i na TV za video signal.</p></div></details>
+
+<details><summary>14. Na što je spojen Cable Modem?</summary><div class="a"><p>Na Coaxial Splitter0, što je strana ISP-a, i na Home Gateway0, što je kućna mreža.</p></div></details>
+
+<details><summary>15. Koji su uređaji spojeni na Home Gateway?</summary><div class="a"><p>Kabelom su spojeni Cable Modem0 i Smart Solar Panel. Ostali se spajaju bežično, pa uključi bežične veze u Preferences. Tipično su to smartphone, tablet, smart lamp, alarm, smart fan, smart window, smart door, smart coffee maker, smart thermostat, smart battery, water meter, smart sprinkler, smoke detector, temperature meter i MCU.</p></div></details>
+
+<details><summary>16. Što se prikazuje nakon prijave na 192.168.25.1 s admin/admin?</summary><div class="a"><p>Web sučelje Home Gatewaya s popisom pametnih uređaja i njihovim statusom, uz mogućnost upravljanja njima.</p></div></details>
+
+<details><summary>17. Je li se vrata zaključala i kako to znaš?</summary><div class="a"><p>Da. U pregledniku status vrata piše Locked, a svjetlo na kvaki se promijenilo iz zelenog u crveno.</p></div></details>
+
+<details><summary>18. Očitanje dima i može li se detektor kontrolirati?</summary><div class="a"><p>Očitanje je 0, ili ono što prikaže preglednik. Detektor dima se ne može kontrolirati, samo se prati njegova vrijednost.</p></div></details>
+
+<details><summary>19. Auto pokrenut u garaži: što se događa sa zrakom?</summary><div class="a"><ul>
+<li>Razina CO u kući raste i zrak se zagađuje.</li>
+<li>Kad CO prijeđe 10,3, MCU automatski otvara prozor, ulazna i garažna vrata i pokreće ventilator na najvišu brzinu. Zrak se izmjenjuje i CO pada.</li>
+<li>MCU ne zatvara vrata i prozore dok CO ne padne ispod 1.</li></ul></div></details>
+
+<details><summary>20. Auto ugašen: što se događa sa zrakom, vratima, prozorom i ventilatorom?</summary><div class="a"><p>Kvaliteta zraka se postupno poboljšava jer se CO više ne stvara, a ventilator ga odvodi. Prozor, vrata i ventilator ostaju otvoreni odnosno uključeni dok CO ne padne ispod 1. Tada ih MCU automatski zatvara i gasi ventilator.</p></div></details>
+
+<details><summary>21. Refleksija: posljedice upada, najvjerojatniji put, kako zaštititi</summary><div class="a">
+<h3>Posljedice</h3><p>Napadač bi mogao otključati vrata i ući u kuću, ugasiti ili lažirati senzore dima i CO, što je opasno po život, otvoriti prozore i garažu te upravljati uređajima. Mogao bi špijunirati ukućane, saznati kad nitko nije kod kuće i koristiti kućnu mrežu za daljnje napade.</p>
+<h3>Najvjerojatniji put</h3><p>Zadane ili slabe lozinke na Home Gatewayu ili pametnim uređajima, ovdje admin/admin. Česte su i nezakrpane ranjivosti te uređaji izloženi internetu.</p>
+<h3>Zaštita</h3><p>Jake i jedinstvene lozinke, dvofaktorska autentikacija, redovito ažuriranje firmvera, odvajanje IoT uređaja na zasebnu mrežu, isključivanje nepotrebnog udaljenog pristupa te jaka Wi-Fi enkripcija WPA2 ili WPA3 uz vatrozid.</p></div></details>
+
+<h2>Lab 3: Evaluate Recent IoT Attacks</h2>
+
+<details><summary>22. Ključni pojmovi za pretragu</summary><div class="a"><p>IoT botnet attack 2025, IoT DDoS record, IoT malware FBI warning, compromised IoT devices, Mirai variant</p></div></details>
+
+<details><summary>23a. Napad 1: Raptor Train botnet</summary><div class="a"><ol>
+<li>Ime ili vrsta: Raptor Train, botnet koji su operirali Flax Typhoon i tvrtka Integrity Technology Group. Pokreće ga varijanta Mirai malwarea po imenu Nosedive.</li>
+<li>Meta: SOHO ruteri, NVR i DVR uređaji, NAS poslužitelji i IP kamere.</li>
+<li>Tko je pogođen: botnet je djelovao barem od svibnja 2020., a u njega je bilo uključeno preko 200.000 uređaja. Napadnute su organizacije u vojsci, vladi, visokom obrazovanju, telekomunikacijama, obrambenoj industriji i IT sektoru.</li>
+<li>Kako: malware se ugrađuje u mrežne i IoT uređaje iskorištavanjem poznatih ranjivosti. Zaraženi uređaji služe kao proxy za skrivanje napadača. FBI je u rujnu 2024. uz sudsko odobrenje preuzeo kontrolu nad botnetom i uklonio malware.</li>
+<li>Izvor: <a href="https://thehackernews.com/2024/09/new-raptor-train-iot-botnet-compromises.html">thehackernews.com, Raptor Train</a></li></ol></div></details>
+
+<details><summary>23b. Napad 2: BADBOX 2.0</summary><div class="a"><ol>
+<li>Ime ili vrsta: BADBOX 2.0, supply-chain napad i botnet.</li>
+<li>Meta: jeftini Android uređaji poput TV streaming boxova, projektora i digitalnih okvira za slike.</li>
+<li>Tko je pogođen: FBI navodi više od milijun zaraženih uređaja, a Google u tužbi više od 10 milijuna. Najviše ih je u Brazilu, zatim u SAD-u, Meksiku i Argentini.</li>
+<li>Kako: malware je ugrađen prije isporuke ili dolazi preko sumnjivih aplikacija. Zaraženi uređaji na kućnoj mreži postaju dio botneta i koriste se kao residential proxy za zlonamjerne aktivnosti.</li>
+<li>Izvor: <a href="https://www.ic3.gov/psa/2025/psa250605">ic3.gov, FBI upozorenje</a></li></ol></div></details>
+
+<details><summary>23c. Napad 3: Aisuru DDoS botnet</summary><div class="a"><ol>
+<li>Ime ili vrsta: Aisuru, IoT botnet za distribuirani DDoS napad, tzv. TurboMirai varijanta.</li>
+<li>Meta: kućni ruteri, CCTV kamere i DVR sustavi. Žrtve DDoS napada su online platforme i telekomi.</li>
+<li>Tko je pogođen: u listopadu 2025. napadnute su gaming platforme prometom od 29,6 Tbps, a Cloudflare je mitigirao rekordnih 29,7 Tbps.</li>
+<li>Kako: vlasnici botneta skeniraju internet za ranjivim uređajima sa zastarjelim firmverom ili zadanim tvorničkim postavkama. Zaražene uređaje zatim zajedno koriste za slanje ogromne količine prometa na metu. Botnet se nudi kao DDoS-for-hire usluga.</li>
+<li>Izvor: <a href="https://www.securityweek.com/aisuru-botnet-powers-record-ddos-attack-peaking-at-29-tbps/">securityweek.com, Aisuru</a></li></ol></div></details>
+
+<details><summary>24. Mitigacija</summary><div class="a">
+<p>Je li se napad mogao spriječiti? Većim dijelom da. Raptor Train i Aisuru iskorištavaju poznate ranjivosti, zastarjeli firmver i zadane lozinke. BADBOX 2.0 je teže spriječiti jer je malware ugrađen prije kupnje, ali ga se može izbjeći kupnjom provjerenih uređaja.</p>
+<p>Može li se obraniti? Da, slojevitom zaštitom: patchiranjem, segmentacijom mreže, nadzorom prometa i DDoS zaštitom.</p>
+<ul>
+<li>Odmah promijeniti zadane lozinke u jake i jedinstvene.</li>
+<li>Redovito ažurirati firmver rutera, kamera i DVR-ova.</li>
+<li>Isključiti nepotrebne servise i izloženost internetu, na primjer UPnP i udaljeni pristup.</li>
+<li>Smjestiti IoT uređaje na odvojenu mrežu, VLAN, uz vatrozid.</li>
+<li>Kupovati samo certificirane uređaje i aplikacije preuzimati samo iz službenih trgovina.</li>
+<li>Nadzirati promet, koristiti DDoS zaštitu i zamijeniti uređaje bez ažuriranja.</li></ul>
+<p>Dodatno: IoT uređaji često nisu cilj sami po sebi nego sredstvo za veće napade, kao što su DDoS, špijunaža i skrivanje napadača. Vlasnik možda nikada ne primijeti zarazu.</p></div></details>
+
+</main>
+<script>
+function toggleAll(open){document.querySelectorAll('details').forEach(function(d){d.open=open;});}
+</script>
+</body>
+</html>
