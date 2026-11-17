@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Network Security Infrastructure – kviz (slajdovi 20–81)</title>
+<style>
+:root{--bg:#f6f8f8;--card:#fff;--tx:#1f2a2a;--mut:#5c6b6b;--ac:#3f7f82;--ok:#2e7d32;--okb:#e5f4e6;--no:#c62828;--nob:#fbe9e9;--bd:#d5dede;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141b1b;--card:#1d2727;--tx:#e6eeee;--mut:#9fb0b0;--ac:#6fb7ba;--ok:#7bd37f;--okb:#1f3a21;--no:#ff8a80;--nob:#401f1f;--bd:#2f3d3d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141b1b;--card:#1d2727;--tx:#e6eeee;--mut:#9fb0b0;--ac:#6fb7ba;--ok:#7bd37f;--okb:#1f3a21;--no:#ff8a80;--nob:#401f1f;--bd:#2f3d3d;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:760px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.35rem;margin:0 0 4px}
+.sub{color:var(--mut);margin:0 0 16px;font-size:.92rem}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px}
+.bar{height:8px;background:var(--bd);border-radius:8px;overflow:hidden;margin:8px 0 14px}
+.bar i{display:block;height:100%;background:var(--ac);transition:width .25s}
+.meta{display:flex;justify-content:space-between;color:var(--mut);font-size:.85rem}
+.tag{display:inline-block;background:var(--bd);color:var(--mut);border-radius:20px;padding:2px 10px;font-size:.75rem;margin-bottom:10px}
+.q{font-size:1.08rem;font-weight:600;margin:0 0 14px}
+.o{display:block;width:100%;text-align:left;background:var(--card);color:var(--tx);border:1.5px solid var(--bd);border-radius:10px;padding:11px 14px;margin:0 0 9px;font:inherit;cursor:pointer}
+.o:hover:not(:disabled){border-color:var(--ac)}
+.o:disabled{cursor:default}
+.o.ok{border-color:var(--ok);background:var(--okb)}
+.o.no{border-color:var(--no);background:var(--nob)}
+.ex{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--bg);border-left:4px solid var(--ac);font-size:.93rem}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:10px;padding:11px 20px;font:inherit;font-weight:600;cursor:pointer;margin-top:14px;margin-right:8px}
+.btn.s{background:transparent;color:var(--ac);border:1.5px solid var(--ac)}
+.big{font-size:2.4rem;font-weight:700;margin:6px 0}
+.rv{border-top:1px solid var(--bd);padding:12px 0;font-size:.92rem}
+.rv b{display:block;margin-bottom:4px}
+.g{color:var(--ok)}.r{color:var(--no)}
+label{font-size:.9rem;color:var(--mut)}
+select{font:inherit;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:6px}
+</style>
+</head>
+<body>
+<div class="w">
+<h1>Network Security Infrastructure</h1>
+<p class="sub">Kviz iz slajdova 20–81 · pitanja su na engleskom (kao na ispitu), objašnjenja na hrvatskom</p>
+<div id="app"></div>
+</div>
+<script>
+// [tema, pitanje, [opcije], indeks točnog, objašnjenje]
+const Q=[
+["Hubovi / switchevi","At which OSI layer does an Ethernet hub forward data?",["Layer 1 – Physical","Layer 2 – Data Link","Layer 3 – Network","Layer 4 – Transport"],0,"Hub je višeportni repeater: regenerira signal i šalje ga na sve druge portove, dakle radi na fizičkom sloju."],
+["Hubovi / switchevi","What is the main purpose of a bridge placed between hubs?",["To route packets between networks","To divide the network into multiple collision domains","To encrypt traffic","To assign IP addresses"],1,"Bridge ima dva sučelja i dijeli mrežu na više collision domena (u svakom samo jedan pošiljatelj odjednom)."],
+["Hubovi / switchevi","A LAN switch makes forwarding decisions based on:",["Source IP address","Destination port number","Ethernet MAC addresses","Routing table entries"],2,"Switch je višeportni bridge i odlučuje na temelju Ethernet MAC adresa."],
+["Hubovi / switchevi","How many collision domains does a switch create?",["One for the whole switch","One for each switch port","One per VLAN","None"],1,"Svaki port switcha je zaseban collision domain."],
+["Switching","What does a switch examine to LEARN new MAC address information?",["Destination MAC address","Source MAC address","Source IP address","Frame type field"],1,"Learn korak: switch gleda izvorišnu (source) MAC adresu i port na koji je okvir ušao."],
+["Switching","By default, most Ethernet switches keep an entry in the MAC address table for:",["30 seconds","1 minute","5 minutes","1 hour"],2,"Zadano zadržavanje unosa je pet minuta; kad se pojavi okvir istog izvora, timer se osvježava."],
+["Switching","A frame arrives with a source MAC that already exists in the table, but on a DIFFERENT port. What does the switch do?",["Discards the frame","Keeps the old entry and ignores the new port","Replaces the entry with the same MAC and the more current port","Floods the frame and blocks the port"],2,"Unos se zamjenjuje istom MAC adresom, ali s novijim brojem porta."],
+["Switching","The MAC address table is also known as:",["ARP cache","CAM table","Routing table","State table"],1,"CAM (content addressable memory) je posebna memorija za brzo pretraživanje."],
+["Switching","Which command output on the slides shows entries of type DYNAMIC with VLAN, MAC address and port?",["show ip route","show mac-address-table","arp -a","show running-config"],1,"„show mac-address-table“ prikazuje VLAN, MAC adresu, tip i port. „arp -a“ mapira IP u MAC na hostu."],
+["VLAN","Which statement about VLANs is correct?",["They create a logical broadcast domain that can span multiple physical LAN segments","They merge all switch ports into one collision domain","They operate only at Layer 1","They require a hub"],0,"VLAN je logička broadcast domena koja može obuhvatiti više fizičkih segmenata, neovisno o lokaciji korisnika."],
+["VLAN","Which is NOT a benefit of VLANs listed on the slides?",["Segmentation by function, project team or application","Organizational flexibility","Prevents users on different VLANs from snooping on each other’s traffic","Increases the maximum Wi-Fi data rate"],3,"Wi-Fi brzina nema veze s VLAN-ovima."],
+["STP","What is the purpose of the Spanning Tree Protocol?",["To encrypt Layer 2 traffic","To maintain one loop-free path in a Layer 2 network","To assign VLAN IDs","To synchronize time"],1,"STP blokira redundantne putove i tako održava jedan logički put bez petlji."],
+["STP","What can still pass through an STP-blocked port?",["User data","BPDU frames","Broadcast storms","Routed packets"],1,"Blokirani port ne propušta korisničke podatke, ali BPDU okvire koje STP koristi da spriječi petlje."],
+["STP","If a cable or switch fails, STP will:",["Shut down the network","Recalculate paths and unblock necessary ports","Delete the MAC table permanently","Switch to Layer 3 routing"],1,"STP preračuna putove i odblokira redundantni put."],
+["Multilayer switching","A multilayer switch performs Layer 2 switching and also forwards frames based on:",["Layer 1 information","Layer 3 and 4 information","Only Layer 7 information","Only VLAN tags"],1,"Multilayer (L3) switch koristi i informacije sloja 3 i 4."],
+["Multilayer switching","Which statement about a routed port is TRUE?",["It is associated with a particular VLAN","STP functions on it","It behaves like a regular router interface and is not tied to a VLAN","It supports subinterfaces"],2,"Routed port je fizički port bez L2 funkcionalnosti: nije u VLAN-u, STP ne radi, a subinterface-ovi nisu podržani."],
+["Multilayer switching","What is an SVI?",["A physical port dedicated to routing","A virtual VLAN interface used for inter-VLAN routing","A type of STP port","A wireless interface"],1,"SVI je virtualno sučelje za VLAN (nema fizičkog porta) i pruža L3 obradu za sve portove tog VLAN-a."],
+["Media","Which of the following is a COPPER wired medium?",["Fiber optic","Satellite","Coaxial","5G"],2,"Bakar: koaksijalni i UTP/STP. Optika je zasebna kategorija, a satelit i 5G su bežični."],
+["Wi-Fi standardi","Which Wi-Fi standard from the table first introduced the 6 GHz band?",["Wi-Fi 5 (802.11ac)","Wi-Fi 6 (802.11ax)","Wi-Fi 7 (802.11be)","Wi-Fi 4 (802.11n)"],2,"Wi-Fi 7 (802.11be, 2024.) radi na 2.4, 5 i 6 GHz, teoretski do 46 Gbps."],
+["Wi-Fi standardi","Which standard operates ONLY in the 5 GHz band (3.5 Gbps theoretical)?",["802.11n","802.11ac","802.11g","802.11b"],1,"Wi-Fi 5 (802.11ac) koristi samo 5 GHz i uvodi MU-MIMO."],
+["Wi-Fi standardi","Which standard introduced SU-MIMO and a 600 Mbps maximum?",["802.11g","802.11a","802.11n","802.11ax"],2,"Wi-Fi 4 (802.11n, 2009.): 2.4 i 5 GHz, 600 Mbps, SU-MIMO."],
+["WLAN","Which media access method do 802.11 WLANs use?",["CSMA/CD","CSMA/CA","Token passing","Polling"],1,"WLAN koristi collision avoidance, a žičani Ethernet (802.3) collision detection."],
+["WLAN","Why can’t WLANs use collision detection?",["Cables are too short","A wireless client cannot hear while it is sending","APs have no MAC addresses","Radio uses full-duplex"],1,"WLAN je half-duplex, dijeljeni medij; klijent ne čuje dok šalje pa ne može detektirati koliziju."],
+["WLAN","What is the correct CSMA/CA sequence?",["Send data → RTS → CTS","Listen to channel → RTS → CTS → send data → ACK","CTS → RTS → send data","Beacon → RTS → probe"],1,"Klijent sluša kanal, šalje RTS, prima CTS, šalje podatke, a sve se potvrđuje (ACK). Bez CTS-a čeka nasumično vrijeme."],
+["WLAN","Which statement about WLANs vs wired LANs is correct?",["WLANs have minimal signal interference","WLANs connect clients through an AP or wireless router","WLANs use the same frame format as Ethernet","WLANs raise fewer privacy issues"],1,"WLAN koristi AP/bežični router umjesto switcha, ima interferenciju, drugačiji format okvira i više problema s privatnošću."],
+["802.11 okvir","In the 802.11 frame, which field is usually missing because it is used only in ad hoc mode?",["Address1","Address3","Sequence Control","Address4"],3,"Address4 se koristi samo u ad hoc načinu. Address3 je odredište (npr. sučelje routera na koje je spojen AP)."],
+["802.11 okvir","What does the Address1 field contain?",["MAC of the transmitting device","MAC of the receiving wireless device or AP","MAC of the destination router","FCS value"],1,"Address1 = prijemnik, Address2 = pošiljatelj."],
+["Asocijacija","What are the three stages a wireless client completes to join a WLAN?",["Scan, encrypt, route","Discover, authenticate, associate","Beacon, probe, ACK","Authorize, account, associate"],1,"Discover AP → Authenticate → Associate."],
+["Asocijacija","In PASSIVE discovery mode, the AP:",["Waits for probe requests only","Periodically broadcasts beacon frames with SSID, standards and security settings","Sends RTS frames","Disables its SSID"],1,"Pasivni način: AP šalje beacon frameove."],
+["Asocijacija","ACTIVE discovery mode may be required when:",["The AP is configured to not broadcast beacon frames","The AP uses 6 GHz","The client has no NIC","WPA3 is enabled"],0,"Klijent šalje probe request (s imenom SSID-a ili bez), a AP odgovara probe responseom."],
+["Asocijacija","Which security mode recommendation is given on the slides?",["Use WEP for compatibility","Always enable the highest security level supported","Disable security for guests","Use only open networks"],1,"Uvijek uključiti najvišu podržanu razinu (WPA3 > WPA2 > WPA > WEP)."],
+["WLC / LWAP","When a WLC is used, lightweight APs (LWAPs):",["Define SSIDs themselves","Only forward data between the WLAN and the WLC","Act autonomously","Replace the router"],1,"Upravljanje (SSID, autentikacija) je centralizirano na WLC-u."],
+["WLC / LWAP","Home and small business wireless routers integrate which functions?",["Router, switch and access point","Firewall, IPS and AAA","Hub, bridge and repeater","WLC and NetFlow collector"],0,"Router + switch + AP u jednom uređaju."],
+["Firewalli","Which statement describes a firewall’s common properties?",["It is the only transit point between internal and external networks and enforces the access control policy","It only monitors traffic without blocking","It operates only at Layer 1","It replaces routers"],0,"Sav promet mora kroz firewall, koji provodi pravila kontrole pristupa."],
+["Firewalli","Which is a firewall LIMITATION?",["It reduces security management complexity","A misconfigured firewall can become a single point of failure","It blocks malicious data","It prevents exposure of sensitive hosts"],1,"Ostalo su prednosti. Ograničenja: loša konfiguracija, usporavanje, tuneliranje, korisnici zaobilaze pravila."],
+["Firewalli","Which are the three firewall designs on the slides?",["Public/Private, DMZ, Zone-Based Policy","Stateful, Stateless, Proxy","Host, Transparent, Hybrid","Inside, Outside, Core"],0,"Public and Private, Demilitarized Zone, Zone-Based Policy Firewalls."],
+["Firewalli","A DMZ firewall design typically has which interfaces?",["Inside and outside only","Inside, outside and DMZ","Two DMZ interfaces","Only a DMZ interface"],1,"DMZ obično ima inside (privatna), outside (javna) i DMZ sučelje za javno dostupne poslužitelje."],
+["Firewalli","In a Zone-Based Policy Firewall, a zone is:",["A single IP address","A group of one or more interfaces with similar functions or features","A VLAN ID","A routing protocol area"],1,"Zone određuju gdje se primjenjuje pravilo/politika Cisco IOS firewalla."],
+["Firewalli","In the ZPF configuration shown, what happens to traffic matching class-default in OUTSIDE-TO-INSIDE?",["inspect","pass","drop","log only"],2,"Policy-map OUTSIDE-TO-INSIDE ima samo class-default s akcijom drop."],
+["Tipovi firewalla","A packet-filtering (stateless) firewall filters based on:",["Layer 3 and Layer 4 information","Layer 7 content only","Session state table","User identity"],0,"Izvorišna/odredišna IP, protokol, portovi, SYN – jednostavna tablica pravila bez stanja."],
+["Tipovi firewalla","Stateful firewalls filter using:",["Only static ACLs","Connection information maintained in a state table","Only MAC addresses","Signatures only"],1,"Najčešća i najsvestranija tehnologija; prati stanje veza."],
+["Tipovi firewalla","An application gateway (proxy) firewall filters at which OSI layers?",["1 and 2","3, 4, 5 and 7","Only 4","2 and 3"],1,"Većina kontrole i filtriranja odvija se softverski."],
+["Tipovi firewalla","Which is a feature of NGFW beyond stateful firewalls?",["Integrated intrusion prevention and application awareness/control","Hub functionality","Only packet filtering","Wireless association"],0,"NGFW: ugrađeni IPS, kontrola aplikacija, nadogradnje feedova i tehnike protiv novih prijetnji."],
+["Tipovi firewalla","A transparent firewall:",["Filters IP traffic between a pair of bridged interfaces","Is software on a PC","Combines various firewall types","Only works with NAT"],0,"Host-based = softver na računalu; hybrid = kombinacija različitih tipova."],
+["IDS / IPS","Which statement is TRUE for IPS compared with IDS?",["IPS can stop trigger packets","IPS has no impact on latency","IDS stops trigger packets","IPS never affects network traffic if the sensor fails"],0,"IPS zaustavlja okidajuće pakete, ali sensor može utjecati na promet (latencija, jitter, preopterećenje). IDS nema utjecaja na mrežu, ali ne zaustavlja trigger pakete."],
+["IDS / IPS","Which is a disadvantage of a Host-based IPS (HIPS)?",["It cannot protect applications","It is operating system dependent and must be installed on all hosts","It cannot see decrypted messages","It requires a dedicated device"],1,"Prednost: štiti nakon dešifriranja poruke i na razini OS-a/aplikacija."],
+["IDS / IPS","What does this rule detect? alert icmp $EXTERNAL_NET any -> $HOME_NET any (... detection_filter:track by_src, count 10, seconds 5 ...)",["SQL injection","A ping sweep (10 ICMP packets from one source within 5 seconds)","A brute-force SSH login","DNS poisoning"],1,"Poruka u pravilu je „SCANNER Ping sweep (ICMP)“, classtype attempted-recon."],
+["IDS / IPS","Which of the following is an open-source IDS/IPS listed on the slides?",["Snort","FortiGate","Cisco WLC","TACACS+"],0,"Navedeni su npr. Snort, Suricata, OSSEC, Bro, Security Onion, Sagan."],
+["ACL","Which statement about ACLs is correct?",["A standard ACL filters only on source IPv4 address","A standard ACL filters on ports","An extended ACL filters only on source IP","ACLs can only be named, not numbered"],0,"Extended ACL filtrira po protokolu, izvorišnoj/odredišnoj IP i portovima. Oba tipa mogu imati broj ili ime."],
+["ACL","Which is a task performed by ACLs?",["Filter traffic based on traffic type and limit network traffic","Synchronize time","Assign VLANs","Encrypt VPN tunnels"],0,"ACL ograničava promet, kontrolira tokove, daje osnovnu sigurnost i dopušta/zabranjuje pristup uslugama."],
+["SNMP","In SNMP, which element is the monitored and managed node?",["SNMP manager","SNMP agent","NetFlow collector","Syslog server"],1,"Manager pokreće softver za upravljanje; agenti su nadzirani čvorovi (get, set, trap poruke)."],
+["NetFlow","What is a NetFlow collector?",["A switch port that mirrors traffic","An external server that receives flow statistics from the router or multilayer switch","A type of firewall","An NTP source"],1,"NetFlow je Cisco IOS tehnologija koja prati byte/packet brojače po tokovima i šalje ih kolektoru."],
+["Port mirroring","What does port mirroring do?",["Blocks redundant paths","Copies traffic passing through a switch to a port with a network monitor attached","Encrypts frames","Routes between VLANs"],1,"Switch duplicira promet i šalje ga na port s npr. packet analyzerom."],
+["Syslog","Which is a primary function of syslog?",["Select the type of logging information captured and specify its destination","Authenticate users","Assign IP addresses","Create VPN tunnels"],0,"Tri funkcije: prikupljanje logova, odabir vrste logova, određivanje odredišta."],
+["NTP","In NTP, which stratum contains devices directly connected to the authoritative time sources?",["Stratum 0","Stratum 1","Stratum 2","Stratum 3"],1,"Stratum 0 je sam autoritativni izvor vremena; stratum 1 su uređaji izravno spojeni na njega."],
+["AAA","“User ‘student’ accessed host serverXYZ using SSH for 15 minutes.” is an example of:",["Authentication","Authorization","Accounting","Encryption"],2,"Accounting bilježi što korisnik radi. Authorization je npr. „student smije pristupiti serverXYZ samo preko SSH-a“."],
+["AAA","Which statement correctly compares TACACS+ and RADIUS?",["TACACS+ uses TCP and encrypts the entire packet; RADIUS uses UDP and encrypts only the password","TACACS+ uses UDP; RADIUS uses TCP","Both encrypt the entire packet","RADIUS authorizes router commands per user/group; TACACS+ cannot"],0,"TACACS+ razdvaja AAA, podržava autorizaciju naredbi po korisniku/grupi; RADIUS je otvoreni standard s opsežnim accountingom."],
+["VPN","How is confidentiality achieved in a VPN?",["By physically separate cables","By encrypting the traffic within the VPN","By using hubs","By blocking all ports"],1,"VPN je privatna mreža preko javne (obično interneta); povezuje dvije krajnje točke logičkom vezom na L2 ili L3."]
+];
+const app=document.getElementById("app");
+let order=[],i=0,score=0,wrong=[],locked=false;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuf=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a};
+function start(list){
+  order=shuf(list).map(n=>{const q=Q[n];const opts=shuf(q[2].map((t,x)=>({t,c:x===q[3]})));return{n,opts}});
+  i=0;score=0;wrong=[];render();
+}
+function home(){
+  app.innerHTML=`<div class="card"><p class="q">${Q.length} pitanja · slajdovi 20–81</p>
+  <p class="sub">Redoslijed pitanja i odgovora je nasumičan. Nakon svakog odgovora vidiš objašnjenje. Na kraju dobiješ pregled pogrešaka. Prolaz na prvom parcijalnom ispitu je 50%.</p>
+  <label>Broj pitanja: <select id="cnt"><option value="${Q.length}">Sva (${Q.length})</option><option value="30">30</option><option value="15">15 (kao na ispitu)</option></select></label><br>
+  <button class="btn" id="go">Započni kviz</button></div>`;
+  document.getElementById("go").onclick=()=>{const c=+document.getElementById("cnt").value;start(shuf(Q.map((_,x)=>x)).slice(0,c))};
+}
+function render(){
+  const o=order[i],q=Q[o.n];locked=false;
+  app.innerHTML=`<div class="card"><div class="meta"><span>Pitanje ${i+1} / ${order.length}</span><span>Bodovi: ${score}</span></div>
+  <div class="bar"><i style="width:${i/order.length*100}%"></i></div>
+  <span class="tag">${esc(q[0])}</span><p class="q">${esc(q[1])}</p><div id="ops"></div><div id="fb"></div></div>`;
+  const ops=document.getElementById("ops");
+  o.opts.forEach((p,x)=>{const b=document.createElement("button");b.className="o";b.textContent=String.fromCharCode(65+x)+". "+p.t;b.onclick=()=>pick(x);ops.appendChild(b)});
+}
+function pick(x){
+  if(locked)return;locked=true;
+  const o=order[i],q=Q[o.n],btns=document.querySelectorAll(".o");
+  btns.forEach((b,k)=>{b.disabled=true;if(o.opts[k].c)b.classList.add("ok")});
+  const right=o.opts[x].c;
+  if(right)score++;else{btns[x].classList.add("no");wrong.push({q:q[1],mine:o.opts[x].t,ans:o.opts.find(p=>p.c).t,e:q[4]})}
+  const last=i===order.length-1;
+  document.getElementById("fb").innerHTML=`<div class="ex"><b class="${right?"g":"r"}">${right?"Točno!":"Netočno."}</b> ${esc(q[4])}</div><button class="btn" id="nx">${last?"Prikaži rezultat":"Sljedeće pitanje"}</button>`;
+  document.getElementById("nx").onclick=()=>{i++;last?end():render()};
+}
+function end(){
+  const p=Math.round(score/order.length*100);
+  app.innerHTML=`<div class="card"><p class="sub">Rezultat</p><div class="big ${p>=50?"g":"r"}">${score} / ${order.length} (${p}%)</div>
+  <p>${p>=90?"Odlično! Gradivo ti je jako dobro savladano.":p>=50?"Prolazno – pogledaj pogreške dolje i ponovi slabije teme.":"Ispod praga od 50% – prođi slajdove ponovno i probaj opet."}</p>
+  <button class="btn" id="again">Novi kviz</button>${wrong.length?'<button class="btn s" id="rw">Ponovi samo pogreške</button>':""}
+  ${wrong.length?`<h3>Pregled pogrešaka (${wrong.length})</h3>`+wrong.map(w=>`<div class="rv"><b>${esc(w.q)}</b><span class="r">Tvoj odgovor: ${esc(w.mine)}</span><br><span class="g">Točno: ${esc(w.ans)}</span><br>${esc(w.e)}</div>`).join(""):""}</div>`;
+  document.getElementById("again").onclick=home;
+  const rw=document.getElementById("rw");
+  if(rw)rw.onclick=()=>{const qs=wrong.map(w=>Q.findIndex(q=>q[1]===w.q));start(qs)};
+}
+home();
+</script>
+</body>
+</html>

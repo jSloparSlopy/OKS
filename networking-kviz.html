@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Networking kviz – što je što</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mut:#5b6572;--bd:#d8dde3;--ac:#0a7ea4;--ok:#1a7f37;--okb:#e3f6e8;--no:#c62828;--nob:#fde8e8}
+@media (prefers-color-scheme:dark){:root{--bg:#16191d;--card:#1f2428;--tx:#e8ebee;--mut:#9aa4af;--bd:#38404a;--ac:#35b6df;--ok:#5fd17d;--okb:#17301f;--no:#ff7b7b;--nob:#3a1d1d}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:780px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:1.4rem;margin:0 0 4px}
+.sub{color:var(--mut);margin:0 0 16px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;padding:9px 14px}
+button:hover{border-color:var(--ac)}
+.tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px}
+.meta{display:flex;justify-content:space-between;color:var(--mut);font-size:.9rem;margin-bottom:8px}
+.bar{height:6px;background:var(--bd);border-radius:3px;margin-bottom:14px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ac)}
+.q{font-size:1.1rem;font-weight:600;margin:0 0 14px}
+.hint{color:var(--mut);font-size:.9rem;margin:-8px 0 12px}
+.opt{display:block;width:100%;text-align:left;margin-bottom:9px;padding:12px 14px}
+.opt.ok{background:var(--okb);border-color:var(--ok)}
+.opt.no{background:var(--nob);border-color:var(--no)}
+.opt.sel{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac) inset}
+.why{display:block;font-size:.9rem;color:var(--mut);margin-top:6px}
+.tag{font-weight:700}
+.ok .tag{color:var(--ok)}.no .tag{color:var(--no)}
+.row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.pri{background:var(--ac);color:#fff;border-color:var(--ac)}
+.flash{min-height:170px;display:flex;flex-direction:column;justify-content:center;text-align:center;font-size:1.1rem;cursor:pointer}
+.small{font-size:.85rem;color:var(--mut)}
+.big{font-size:2rem;font-weight:700;text-align:center;margin:8px 0}
+</style>
+</head>
+<body>
+<main>
+<h1>Networking kviz – što je što</h1>
+<p class="sub">Svaka ponuđena opcija iz tvojih 18 slika (točna i netočna) je ovdje, s objašnjenjem.</p>
+<div class="tabs" id="tabs"></div>
+<div id="app"></div>
+</main>
+<script>
+const o=(t,ok,why)=>({t,ok,why});
+const Q=[
+{q:"A PC downloads a large file. TCP window = 1000 bytes, server sends 100-byte segments. How many segments before an ACK is required?",o:[
+o("10 segments",1,"1000 B ÷ 100 B = 10. Nakon što primi cijeli prozor (1000 B), odredište šalje ACK."),
+o("1000 segments",0,"Bilo bi točno samo kad bi segmenti bili 1 bajt."),
+o("100 segments",0,"Bilo bi točno kad bi segmenti bili 10 bajtova."),
+o("1 segment",0,"Bilo bi točno kad bi prozor bio samo 100 B. Prozor je 1000 B pa stane 10 segmenata.")]},
+{q:"Which two operations are provided by TCP but not by UDP? (Choose two.)",multi:1,o:[
+o("acknowledging received data",1,"Pouzdanost: TCP potvrđuje primljene podatke. UDP ne."),
+o("retransmitting any unacknowledged data",1,"Pouzdanost: TCP ponovno šalje nepotvrđene podatke. UDP ne."),
+o("reconstructing data in the order received",0,"Radi i UDP: ne numerira segmente, slaže ih redom kako stignu."),
+o("identifying the applications",0,"Rade i TCP i UDP (preko brojeva portova)."),
+o("identifying individual conversations",0,"Rade i TCP i UDP (par IP + port).")]},
+{q:"What is the result of an ARP poisoning attack?",o:[
+o("Client information is stolen.",1,"Napadač lažira ARP odgovor (npr. kao default gateway), promet teče kroz njega – MITM, pa može krasti podatke."),
+o("Network clients experience a denial of service.",0,"Nije primarni rezultat ARP trovanja; DoS je tipičniji za npr. DHCP starvation ili flood."),
+o("Network clients are infected with a virus.",0,"ARP trovanje ne ubacuje malware, samo preusmjerava promet."),
+o("Client memory buffers are overwhelmed.",0,"To je buffer overflow, drugi napad.")]},
+{q:"Exhibit: PC1 sends an ARP request because it needs to send a packet to PC3 (on another network, behind RT1). What happens next?",o:[
+o("RT1 will send an ARP reply with its own Fa0/0 MAC address.",1,"Za uređaj na drugoj mreži PC1 pita za MAC default gatewaya. RT1 odgovara MAC-om svog sučelja na toj (PC1) mreži – Fa0/0."),
+o("RT1 will send an ARP reply with its own Fa0/1 MAC address.",0,"Fa0/1 je sučelje prema drugoj mreži (SW2), PC1 ga ne vidi."),
+o("SW1 will send an ARP reply with its Fa0/1 MAC address.",0,"Switch (L2) ne odgovara na ARP, samo prosljeđuje okvire."),
+o("RT1 will send an ARP reply with the PC3 MAC address.",0,"To bi bio proxy ARP; standardno router daje svoj MAC, ne MAC odredišta."),
+o("RT1 will forward the ARP request to PC3.",0,"Router ne prosljeđuje broadcast (ARP) na drugu mrežu.")]},
+{q:"Which method would an IPv6 host using SLAAC employ to learn the address of the default gateway?",o:[
+o("router advertisement messages received from the link router",1,"RA nosi prefiks i adresu routera (default gateway)."),
+o("neighbor advertisement messages received from link neighbors",0,"NA je odgovor na NS: razrješavanje adrese susjeda / DAD."),
+o("router solicitation messages received from the link router",0,"RS šalje host (traži RA), ne router."),
+o("neighbor solicitation messages sent to link neighbors",0,"NS služi za razrješavanje MAC-a susjeda i DAD.")]},
+{q:"What message informs IPv6 interfaces to use stateful DHCPv6 for obtaining an IPv6 address?",o:[
+o("the ICMPv6 Router Advertisement",1,"RA s postavljenim M flagom (managed) = 1 kaže: koristi stateful DHCPv6."),
+o("the ICMPv6 Router Solicitation",0,"RS šalje host da zatraži RA."),
+o("the DHCPv6 Advertise message",0,"Server ga šalje kao odgovor na Solicit – dakle nakon što je host već odlučio koristiti DHCPv6."),
+o("the DHCPv6 Reply message",0,"Završna poruka DHCPv6 servera s dodijeljenom konfiguracijom.")]},
+{q:"Which routing protocol is used to exchange routes between internet service providers?",o:[
+o("BGP",1,"Path-vector EGP – standard za razmjenu ruta između ISP-ova/autonomnih sustava."),
+o("EIGRP",0,"IGP unutar organizacije."),
+o("IS-IS",0,"IGP (link-state), tipično unutar jedne mreže/ISP-a."),
+o("RIP",0,"Jednostavan distance-vector IGP za male mreže."),
+o("OSPF",0,"Link-state IGP unutar jednog autonomnog sustava.")]},
+{q:"Which characteristic describes a wireless client operating in active mode?",o:[
+o("must know the SSID to connect to an AP",1,"Očekivani odgovor testa: klijent u active modu mora znati ime SSID-a (šalje probe request s njim). Koristi se kad AP ne šalje beacon."),
+o("broadcasts probes that request the SSID",0,"Zamka: active mode doista šalje probe, ali test traži karakteristiku 'mora znati SSID'."),
+o("ability to dynamically change channels",0,"Nije vezano uz active/passive mode."),
+o("must be configured for security before attaching to an AP",0,"Sigurnost se ne traži prije spajanja zbog moda.")]},
+{q:"Which two statements are true about NTP servers in an enterprise network? (Choose two.)",multi:1,o:[
+o("NTP servers at stratum 1 are directly connected to an authoritative time source.",1,"Stratum 1 = izravno spojen na autoritativni izvor (GPS, atomski sat)."),
+o("NTP servers ensure an accurate time stamp on logging and debugging information.",1,"Glavna svrha NTP-a: ispravni vremenski žigovi pri logiranju i troubleshootingu."),
+o("There can only be one NTP server on an enterprise network.",0,"Može ih biti više."),
+o("All NTP servers synchronize directly to a stratum 1 time source.",0,"Hijerarhija: stratum 2 sinkronizira sa stratum 1, itd."),
+o("NTP servers control the mean time between failures (MTBF) for key network devices.",0,"NTP nema veze s MTBF-om.")]},
+{q:"What is a host-based intrusion detection system (HIDS)?",o:[
+o("It combines the functionalities of antimalware applications with firewall protection.",1,"HIDS je agent na hostu: antimalware + firewall, detektira i sprječava izvršavanje malwarea."),
+o("It identifies potential attacks and sends alerts but does not stop the traffic.",0,"Opis klasičnog IDS-a."),
+o("It detects and stops potential direct attacks but does not scan for malware.",0,"HIDS skenira malware."),
+o("It is an agentless system that scans files on a host for potential malware.",0,"HIDS je agent-based (radi izravno na hostu).")]},
+{q:"Match: IPS",o:[
+o("uses signatures to detect patterns in network traffic",1,"IPS koristi potpise za prepoznavanje obrazaca u prometu."),
+o("filters traffic on Layer 7 information",0,"To je application gateway."),
+o("enforces an access control policy based on packet content",0,"To je packet filter firewall."),
+o("filters traffic based on defined rules as well as connection context",0,"To je stateful firewall.")]},
+{q:"Match: application gateway",o:[
+o("filters traffic on Layer 7 information",1,"Proxy/application gateway radi na aplikacijskom sloju."),
+o("uses signatures to detect patterns in network traffic",0,"IPS."),
+o("enforces an access control policy based on packet content",0,"Packet filter firewall."),
+o("filters traffic based on defined rules as well as connection context",0,"Stateful firewall.")]},
+{q:"Match: packet filter firewall",o:[
+o("enforces an access control policy based on packet content",1,"Filtrira prema sadržaju zaglavlja paketa (IP, port...)."),
+o("uses signatures to detect patterns in network traffic",0,"IPS."),
+o("filters traffic on Layer 7 information",0,"Application gateway."),
+o("filters traffic based on defined rules as well as connection context",0,"Stateful firewall.")]},
+{q:"Match: stateful firewall",o:[
+o("filters traffic based on defined rules as well as connection context",1,"Prati stanje veze, pa propušta samo legitimne odgovore."),
+o("uses signatures to detect patterns in network traffic",0,"IPS."),
+o("filters traffic on Layer 7 information",0,"Application gateway."),
+o("enforces an access control policy based on packet content",0,"Packet filter firewall.")]},
+{q:"Which firewall feature ensures that incoming packets are legitimate responses to requests initiated from internal hosts?",o:[
+o("stateful packet inspection",1,"Provjerava da dolazni paketi pripadaju vezi koju je pokrenuo interni host."),
+o("packet filtering",0,"Dopušta/zabranjuje prema IP ili MAC adresi."),
+o("URL filtering",0,"Dopušta/zabranjuje prema URL-u ili ključnim riječima."),
+o("application filtering",0,"Dopušta/zabranjuje prema broju porta.")]},
+{q:"What is an advantage of HIPS that is not provided by IDS?",o:[
+o("HIPS protects critical system resources and monitors operating system processes.",1,"HIPS je softver na hostu: štiti OS i kritične sistemske procese."),
+o("HIPS deploys sensors at network entry points and protects critical network segments.",0,"To radi mrežni IDS/IPS (NIDS/NIPS)."),
+o("HIPS provides quick analysis of events through detailed logging.",0,"Logiranje nije prednost koju IDS nema."),
+o("HIPS monitors network processes and protects critical files.",0,"Zamka: HIPS štiti sistemske resurse i OS procese hosta, ne 'mrežne procese'.")]},
+{q:"Which AAA component can be established using token cards?",o:[
+o("authentication",1,"Autentikacija: korisničko ime/lozinka, challenge-response, token kartice."),
+o("authorization",0,"Određuje kojim resursima i operacijama korisnik smije pristupiti."),
+o("accounting",0,"Prati kako se mrežni resursi koriste."),
+o("auditing",0,"Prati/revidira korištenje resursa (uz accounting).")]},
+{q:"What action does a DHCPv4 client take if it receives more than one DHCPOFFER?",o:[
+o("It sends a DHCPREQUEST that identifies which lease offer the client is accepting.",1,"Klijent šalje jedan DHCPREQUEST za odabranu ponudu (server naveden u poruci)."),
+o("It sends a DHCPNAK and begins the DHCP process over again.",0,"DHCPNAK šalje server, ne klijent."),
+o("It accepts both DHCPOFFER messages and sends a DHCPACK.",0,"Klijent prihvaća jednu ponudu; DHCPACK šalje server."),
+o("It discards both offers and sends a new DHCPDISCOVER.",0,"Ne odbacuje ponude, odabire jednu.")]},
+{q:"Two PCs at different companies both use 192.168.0.1 and still reach the Internet. How?",o:[
+o("ISPs use Network Address Translation to change a user IP address into an address that can be used on the Internet.",1,"NAT mijenja privatne u javne, rutabilne adrese; privatne ostaju skrivene pa se smiju ponavljati."),
+o("ISPs use Domain Name Service to change a user IP address into a public IP address.",0,"DNS prevodi imena u IP adrese, ne IP u IP."),
+o("Both users must be on the same network.",0,"Nisu – različite su tvrtke."),
+o("Both users must be using the same Internet Service Provider.",0,"Nije nužno, privatne adrese se ponavljaju neovisno o ISP-u.")]},
+{q:"Exhibit: from the perspective of users behind the NAT router, what type of NAT address is 209.165.201.1?",o:[
+o("inside global",1,"Javna adresa NAT routera kojom vanjski svijet vidi interni host."),
+o("inside local",0,"Stvarna adresa internog hosta (10.0.0.121)."),
+o("outside global",0,"Adresa odredišta na vanjskoj mreži."),
+o("outside local",0,"Stvarna privatna adresa odredišta iza drugog NAT uređaja.")]},
+{q:"Match: FTP",o:[o("TCP",1,"FTP traži pouzdan prijenos datoteka."),o("UDP",0,"FTP ne koristi UDP.")]},
+{q:"Match: HTTP",o:[o("TCP",1,"Web promet traži pouzdanost."),o("UDP",0,"HTTP ne koristi UDP (osim HTTP/3 preko QUIC-a, ali test računa TCP).")]},
+{q:"Match: SMTP",o:[o("TCP",1,"E-mail mora stići cijel i pouzdano."),o("UDP",0,"SMTP ne koristi UDP.")]},
+{q:"Match: DHCP",o:[o("UDP",1,"Mali, brzi upiti/odgovori (porti 67/68)."),o("TCP",0,"DHCP ne koristi TCP.")]},
+{q:"Match: TFTP",o:[o("UDP",1,"TFTP je 'trivial' – jednostavan, bez TCP-ove pouzdanosti."),o("TCP",0,"TFTP koristi UDP; za razliku od FTP-a.")]}
+];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const app=document.getElementById("app"),tabs=document.getElementById("tabs");
+let mode="mc",list=[],i=0,score=0,done=false,sel=new Set(),flip=false;
+const MODES={mc:"Pitanja",tf:"Točno / netočno (svaka opcija)",fc:"Kartice"};
+function start(m){mode=m;i=0;score=0;done=false;sel=new Set();flip=false;
+ if(m==="mc")list=shuffle(Q).map(x=>({...x,o:shuffle(x.o)}));
+ else{list=[];Q.forEach(x=>x.o.forEach(p=>list.push({q:x.q,p})));list=shuffle(list)}
+ tabs.innerHTML=Object.entries(MODES).map(([k,v])=>`<button class="${k===m?"on":""}" onclick="start('${k}')">${v}</button>`).join("");
+ render()}
+function head(){return `<div class="meta"><span>${i+1} / ${list.length}</span><span>Bodovi: ${score}</span></div><div class="bar"><i style="width:${i/list.length*100}%"></i></div>`}
+function end(){app.innerHTML=`<div class="card"><div class="big">${score} / ${list.length}</div><p style="text-align:center">${score===list.length?"Savršeno!":"Pokušaj ponovno da pokriješ sve."}</p><div class="row" style="justify-content:center"><button class="pri" onclick="start('${mode}')">Ponovi</button></div></div>`}
+function next(){i++;done=false;sel=new Set();flip=false;render()}
+function render(){
+ if(i>=list.length)return end();
+ const c=list[i];
+ if(mode==="mc"){
+  const nCorrect=c.o.filter(x=>x.ok).length;
+  app.innerHTML=`<div class="card">${head()}<p class="q">${esc(c.q)}</p>${c.multi?`<p class="hint">Odaberi ${nCorrect}.</p>`:""}`+
+   c.o.map((x,k)=>{let cl="opt";if(done)cl+=x.ok?" ok":(sel.has(k)?" no":"");else if(sel.has(k))cl+=" sel";
+    return `<button class="${cl}" onclick="pick(${k})">${esc(x.t)}${done?`<span class="why"><span class="tag">${x.ok?"Točno: ":"Netočno: "}</span>${esc(x.why)}</span>`:""}</button>`}).join("")+
+   `<div class="row">${!done&&c.multi?`<button class="pri" onclick="check()">Provjeri</button>`:""}${done?`<button class="pri" onclick="next()">Dalje</button>`:""}</div></div>`;
+ }else if(mode==="tf"){
+  app.innerHTML=`<div class="card">${head()}<p class="small">Pitanje:</p><p class="q">${esc(c.q)}</p><p class="small">Je li ovo točan odgovor?</p><p class="q" style="border-left:3px solid var(--ac);padding-left:10px">${esc(c.p.t)}</p>`+
+   (done?`<div class="opt ${sel.has("r")?"ok":"no"}" style="cursor:default"><span class="tag">${sel.has("r")?"Dobro! ":"Pogrešno. "}</span>To je ${c.p.ok?"TOČAN":"NETOČAN"} odgovor. <span class="why">${esc(c.p.why)}</span></div><div class="row"><button class="pri" onclick="next()">Dalje</button></div>`:
+   `<div class="row"><button onclick="tf(true)">Točno</button><button onclick="tf(false)">Netočno</button></div>`)+`</div>`;
+ }else{
+  app.innerHTML=`<div class="card">${head()}<div class="flash" onclick="flip=!flip;render()">`+
+   (flip?`<span class="tag" style="color:${c.p.ok?"var(--ok)":"var(--no)"}">${c.p.ok?"TOČAN odgovor":"NETOČAN odgovor"}</span><p>${esc(c.p.why)}</p>`:`<span class="small">${esc(c.q)}</span><p class="q">${esc(c.p.t)}</p><span class="small">(klikni za okretanje)</span>`)+
+   `</div><div class="row"><button class="pri" onclick="i++;flip=false;render()">Dalje</button></div></div>`}
+}
+function pick(k){if(done)return;const c=list[i];
+ if(c.multi){sel.has(k)?sel.delete(k):sel.add(k);render()}
+ else{sel=new Set([k]);done=true;if(c.o[k].ok)score++;render()}}
+function check(){const c=list[i];done=true;
+ if(c.o.every((x,k)=>!!x.ok===sel.has(k)))score++;render()}
+function tf(v){const c=list[i];done=true;if(v===!!c.p.ok){score++;sel.add("r")}render()}
+start("mc");
+</script>
+</body>
+</html>
